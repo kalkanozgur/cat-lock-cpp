@@ -11,9 +11,12 @@
 - **Adım 3 — LED (31.10.2026):** G HUB ve SDK yerine G213'e doğrudan HID (kullanıcı kararı): kırmızı nefes → 500 ms yeşil → `normal_color`. Kullanıcı Debug'da doğruladı. Cihaz açılışı 62–78 ms.
 - **Adım 5 — boşta kilit (31.10.2026):** `idle_policy` + testler, varsayılan 3 dk, tepsiden Kapalı/1/3/5/10 dk. Kullanıcı Debug'da doğruladı. Debug ve Release 0 uyarı, `kk_core_tests` 89/89.
 
+- **Adım 7 — kurulum (31.10.2026):** `scripts/register-task.ps1` (kur/güncelle/kaldır), Release, README. Kullanıcı testleri onayladı. Release 0 uyarı, ctest yeşil.
+
 ## Sıradaki
 
-- **Adım 7:** `scripts/register-task.ps1` (kur/kaldır), Release, README güncelle. Bitti sayılır: oturum açılışında yüksek yetkiyle çalışıyor.
+- Plan adımları tamamlandı. Yeni adım kullanıcıdan gelir.
+- Adım 4'ün çoklu monitör + farklı DPI teyidi hâlâ yok.
 
 ## Açık sorular
 

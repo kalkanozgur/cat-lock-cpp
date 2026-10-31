@@ -2,7 +2,7 @@
 
 Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulaması. Kilitliyken Logitech G213 kırmızı nefes alır; rakam koduyla açılır.
 
-> **Durum:** geliştirme aşamasında — güncel adım `docs/DURUM.md`. Çalışan sürüm: `legacy/kedi-kilit.ahk` (AutoHotkey v2).
+> **Durum:** güncel adım `docs/DURUM.md`.
 
 ## Özellikler
 
@@ -49,16 +49,18 @@ VS Code: alt çubuktan preset seç → **Build**. Çıktı: `build\Debug\kedi-ki
 
 > ⚠️ Claude Code `kedi-kilit.exe`'yi **asla** çalıştırmaz — kilitlenirsin ve o açamaz. Çalıştırma testleri sende. İlk testleri **Debug** ile yap: 30 s sonra kendiliğinden açılır.
 
-## Kurulum (oturum açılışında, yüksek yetkiyle) — Adım 7'de eklenir
+## Kurulum (oturum açılışında, yüksek yetkiyle)
 
-Yönetici PowerShell:
+Önce Release derle, açık kopyayı tepsiden kapat. Yönetici PowerShell:
 
 ```powershell
-.\scripts\register-task.ps1            # kur
-.\scripts\register-task.ps1 -Remove    # kaldır
+powershell -ExecutionPolicy Bypass -File .\scripts\register-task.ps1            # kur veya güncelle
+powershell -ExecutionPolicy Bypass -File .\scripts\register-task.ps1 -Remove    # kaldır
 ```
 
-- Release exe'yi `C:\Program Files\KediKilit\`'e kopyalar, Görev Zamanlayıcı'ya "oturum açılışında, en yüksek ayrıcalıklarla" görev ekler.
+- Release exe'yi `C:\Program Files\KediKilit\`'e kopyalar, Görev Zamanlayıcı'ya "oturum açılışında, en yüksek ayrıcalıklarla" görev ekler ve hemen başlatır.
+- Yeni sürüm için aynı komut yeterli: kurulu kopyayı durdurur, üzerine yazar, yeniden başlatır.
+- Kaldırma ayar ve logu silmez.
 - Yüksek yetki gerekçesi: yönetici olarak çalışan bir pencere odaktayken normal yetkili hook tuşları göremez (UIPI).
 - Exe `Program Files`'ta: yükseltilmiş görev, kullanıcının değiştirebileceği bir yoldan çalışmaz; ayrıca çalışırken yeniden derleme çakışmaz.
 
