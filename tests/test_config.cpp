@@ -22,7 +22,7 @@ TEST(empty_text_gives_defaults) {
     CHECK_EQ(r.config.idle_lock_min, 0);
     CHECK(r.config.pause_in_fullscreen);
     CHECK(r.config.overlay_enabled);
-    CHECK_EQ(r.config.overlay_alpha, 60);
+    CHECK_EQ(r.config.overlay_alpha, 128);
     CHECK(r.config.led_enabled);
 }
 
@@ -98,7 +98,7 @@ TEST(invalid_values_keep_default) {
          {"[overlay]\nalpha=256", "[overlay]\nalpha=-1", "[overlay]\nalpha=abc",
           "[overlay]\nalpha=60 ; yorum", "[overlay]\nalpha=", "[overlay]\nalpha=99999999999999"}) {
         const auto r = parse_config(text);
-        CHECK_EQ(r.config.overlay_alpha, 60);
+        CHECK_EQ(r.config.overlay_alpha, 128);
         CHECK_EQ(r.issues.size(), std::size_t{1});
     }
     CHECK_EQ(parse_config("[auto]\ncat_min_simultaneous=2").config.cat_min_simultaneous, 4);

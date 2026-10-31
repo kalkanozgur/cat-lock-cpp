@@ -58,13 +58,14 @@ src/core/          Win32 include YOK → kk_core (static lib), testlenir
   code_matcher     rakam tamponu, eşleşme, sıfırlama
   cat_detector     tuş olay akışı → "kedi" kararı
   idle_policy      boşta süre + tam ekran → kilit kararı
+  hook_health      hook ölü mü kararı (tick taşması dahil)
 src/win/           hooks, led, overlay, tray, app, paths, log, main (WinMain), app.manifest
 tests/             harness.h + test_*.cpp → kk_core_tests.exe
 scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştırır)
 ```
 
 - **Hook** (`WH_KEYBOARD_LL`, `WH_MOUSE_LL`): durum oku/güncelle + `PostMessage(WM_APP+n)` + `return 1`. Başka hiçbir şey. Sebep: `LowLevelHooksTimeout` aşılırsa Windows hook'u sessizce kaldırır.
-- Kilitliyken: tüm KEYDOWN/KEYUP ve tüm fare mesajları (MOUSEMOVE dahil → imleç donar) yutulur. Rakam yalnız KEYDOWN'da işlenir; rakam dışı KEYDOWN tamponu sıfırlar; Shift/Ctrl/Alt/Win sıfırlamaz.
+- Kilitliyken: tüm KEYDOWN/KEYUP ve tüm fare mesajları (MOUSEMOVE dahil → imleç donar) yutulur. Tek istisna: kilitten önce sisteme iletilmiş basmaların KEYUP/düğme bırakması geçirilir, yoksa Ctrl/Alt açılıştan sonra takılı kalır. Rakam yalnız KEYDOWN'da işlenir; rakam dışı KEYDOWN tamponu sıfırlar; Shift/Ctrl/Alt/Win sıfırlamaz.
 - NumLock kapalı numpad (`LLKHF_EXTENDED` = 0): Ins 0 · End 1 · Down 2 · PgDn 3 · Left 4 · Clear 5 · Right 6 · Home 7 · Up 8 · PgUp 9. Extended olanlar (ayrı ok/gezinme bloğu) rakam değildir.
 - LED, overlay, log, timer → ana mesaj döngüsü.
 - Hook sağlık kontrolü: `GetLastInputInfo` son hook olayından > 2 s yeniyse hook'u yeniden kur ve logla (davranışı Adım 2'de doğrula).
@@ -85,7 +86,7 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 | Kedi algılama | Modifier hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
 | Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise) |
-| Overlay | Her monitörde `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
+| Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 128 ≈ %50): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
 | Tepsi | Kilitle · Kedi algılama (aç/kapa) · Ayar dosyasını aç · Log klasörü · Çıkış |
 
 Eşik gerekçesi: 100 WPM ≈ 8,3 tuş/s → 250 ms'de ~2 tuş; 6 farklı tuş/250 ms ≈ 24 tuş/s, insan için gerçek dışı. Oyunlar WASD + Space + Shift ile 4–5 eşzamanlı tuş üretir → modifier hariç sayım + tam ekran askısı.

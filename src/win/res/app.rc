@@ -1,0 +1,5 @@
+#include "resource.h"
+
+// En küçük kimlik exe ikonu olur.
+IDI_KK_PAW ICON "paw.ico"
+IDI_KK_PAW_BANNED ICON "paw-banned.ico"

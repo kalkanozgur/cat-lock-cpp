@@ -21,7 +21,7 @@ struct Config {
     bool pause_in_fullscreen = true;
 
     bool overlay_enabled = true;
-    int overlay_alpha = 60;
+    int overlay_alpha = 128;  // siyah, yaklaşık %50 karartma
 
     bool led_enabled = true;
 

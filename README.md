@@ -12,7 +12,7 @@ Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulam
 | Açma | Rakam kodu — üst sıra veya numpad (NumLock kapalıyken de) |
 | Kedi algılama | Çok tuşa aynı anda ya da insanüstü hızda basılınca otomatik kilit |
 | Boşta kilit | N dakika girdi yoksa (varsayılan kapalı) |
-| Overlay | Tüm monitörlerde "kilitli" göstergesi |
+| Overlay | Kilitliyken tüm monitörler yaklaşık %50 kararır |
 | LED | Kilitli: kırmızı yanıp söner · Açılış: 0,5 s yeşil → G HUB profiline döner |
 | Tepsi | Kilitle · Kedi algılama aç/kapa · Ayar dosyası · Log klasörü · Çıkış |
 
@@ -78,7 +78,7 @@ Yönetici PowerShell:
 | `[auto] cat_min_distinct` | `6` | Pencere içinde farklı tuş sayısı |
 | `[auto] idle_lock_min` | `0` | Boşta kilit süresi, `0` = kapalı |
 | `[auto] pause_in_fullscreen` | `1` | Tam ekran oyun/sunumda otomatik kilit yok |
-| `[overlay] enabled` / `alpha` | `1` / `60` | `alpha` 0–255 |
+| `[overlay] enabled` / `alpha` | `1` / `128` | Karartma: `0` yok, `128` ≈ %50, `255` tam siyah |
 | `[led] enabled` | `1` | |
 
 Log: `%LOCALAPPDATA%\KediKilit\kedi-kilit.log` — kilit/açma olayları ve sebepleri, LED durumu. Kod ve basılan tuşlar yazılmaz.

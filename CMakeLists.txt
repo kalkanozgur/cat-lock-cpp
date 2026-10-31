@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 # Statik CRT: exe harici DLL istemez (CLAUDE.md §2). project()'ten önce olmalı.
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(kedi-kilit LANGUAGES CXX)
+project(kedi-kilit LANGUAGES CXX RC)
 
 if(NOT MSVC)
   message(FATAL_ERROR "Yalnız MSVC desteklenir: LogitechLEDLib.lib MSVC-mangled.")
@@ -33,9 +33,26 @@ target_include_directories(kk_core PUBLIC src)
 
 # Uygulama. Hook'lar klavye ve fareyi yutar: CTest hedefi yapılmaz.
 add_executable(kedi-kilit WIN32
+  src/win/app.cpp
+  src/win/hooks.cpp
+  src/win/log.cpp
   src/win/main.cpp
+  src/win/overlay.cpp
+  src/win/paths.cpp
+  src/win/tray.cpp
   src/win/app.manifest
+  src/win/res/app.rc
 )
+
+# "Ayar dosyasını aç" ilk seferde bu şablonu yazar; tek kaynak example.ini.
+set(KK_EXAMPLE_INI_PATH "${CMAKE_SOURCE_DIR}/config/kedi-kilit.example.ini")
+file(READ "${KK_EXAMPLE_INI_PATH}" KK_EXAMPLE_INI_TEXT)
+file(CONFIGURE OUTPUT "${CMAKE_BINARY_DIR}/generated/example_ini.h"
+  CONTENT "#pragma once\ninline constexpr char kExampleIni[] = R\"kkini(@KK_EXAMPLE_INI_TEXT@)kkini\";\n"
+  @ONLY)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${KK_EXAMPLE_INI_PATH}")
+
+target_include_directories(kedi-kilit PRIVATE "${CMAKE_BINARY_DIR}/generated")
 target_include_directories(kedi-kilit SYSTEM PRIVATE "${KK_LED_DIR}")
 target_compile_definitions(kedi-kilit PRIVATE
   UNICODE _UNICODE WIN32_LEAN_AND_MEAN NOMINMAX
@@ -52,6 +69,7 @@ add_executable(kk_core_tests
   tests/test_main.cpp
   tests/test_code_matcher.cpp
   tests/test_config.cpp
+  tests/test_hook_health.cpp
   tests/test_key_map.cpp
 )
 target_include_directories(kk_core_tests PRIVATE tests)
