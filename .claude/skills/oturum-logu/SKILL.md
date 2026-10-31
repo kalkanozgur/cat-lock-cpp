@@ -1,6 +1,6 @@
 ---
 name: oturum-logu
-description: kedi-kilit oturumlarında yapılanları E:\Documents\Claude-Logs klasörüne oturum başına bir .md dosyası olarak logla.
+description: cat-lock-cpp (eski adı kedi-kilit) oturumlarında yapılanları E:\Documents\Claude-Logs klasörüne oturum başına bir .md dosyası olarak logla.
 ---
 
 # Oturum logu
@@ -42,7 +42,7 @@ Proje: kedi-kilit · Cihaz: <bilgisayar adı>
 
 Her anlamlı adım için bir satır: saat, kısa istek, yapılan işlem, araç, sonuç. Değişen dosyayı adıyla yaz. Script tam metni yazılmaz; ne yaptığı bir cümleyle yazılır.
 
-Kilit kodu, parola, token ve benzeri gizli değerler asla loglanmaz. `kedi-kilit.ini` okunmaz.
+Kilit kodu, parola, token ve benzeri gizli değerler asla loglanmaz. `cat-lock-cpp.ini` ve eski `kedi-kilit.ini` okunmaz.
 
 ## Varsayımlar
 

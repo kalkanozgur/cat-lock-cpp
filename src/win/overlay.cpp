@@ -8,7 +8,7 @@ namespace kk::win {
 
 namespace {
 
-constexpr const wchar_t* kClassName = L"KediKilitOverlay";
+constexpr const wchar_t* kClassName = L"CatLockCppOverlay";
 constexpr DWORD kExStyle = WS_EX_LAYERED | WS_EX_TRANSPARENT | WS_EX_TOPMOST | WS_EX_TOOLWINDOW |
                            WS_EX_NOACTIVATE;
 

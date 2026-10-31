@@ -13,10 +13,12 @@
 
 - **Adım 7 — kurulum (31.10.2026):** `scripts/register-task.ps1` (kur/güncelle/kaldır), Release, README. Kullanıcı testleri onayladı. Release 0 uyarı, ctest yeşil.
 
+- **Yeniden adlandırma ve kaldırıcı (31.10.2026):** uygulama `cat-lock-cpp` oldu; ayar eski `KediKilit` klasöründen ilk açılışta taşınır. `scripts/uninstall.cmd` + `uninstall.ps1`, `dist` hedefi, Release boyut bayrakları eklendi. Kullanıcı testleri onayladı. 0 uyarı, `kk_core_tests` 89/89, Release exe 233 984 bayt.
+
 ## Sıradaki
 
 - Plan adımları tamamlandı. Yeni adım kullanıcıdan gelir.
-- Adım 4'ün çoklu monitör + farklı DPI teyidi hâlâ yok.
+- Farklı DPI testi kullanıcı kararıyla kapsam dışı.
 
 ## Açık sorular
 
@@ -26,6 +28,7 @@
 ## Varsayımlar ve kararlar
 
 - Repo: `kalkanozgur/cat-lock-cpp` (private), kullanıcı kararı. Push yalnız kullanıcı isteyince.
+- Release private kalır (kullanıcı kararı), ilk sürüm `v1.0.0`. Yerel klasör adı `kedi-kilit` kaldı. Deny kuralı exe adını içeren her komutu engellediği için release'e zip yüklenir.
 - Repoda olmayanlar (`.gitignore`), kullanıcı kararı: `kedi-kilit.ahk`, `LogitechLedEnginesWrapper.dll`, `third_party/logitech_led/`, kök dizindeki oturum dosyaları. Sonuç: yeni klonda `legacy/` yok. SDK artık kullanılmıyor; derleme ona bağlı değil.
 - Generator `Visual Studio 18 2026` (Build Tools 18.5, MSVC 14.50, CMake 4.4.4).
 - Kod sondan eşleşir (AHK davranışı): öndeki yanlış rakamlar açılışı engellemez.

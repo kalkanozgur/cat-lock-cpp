@@ -22,7 +22,7 @@ HICON load_icon(int id) {
 
 void apply_state() {
     g_icon.hIcon = load_icon(g_locked ? IDI_KK_PAW_BANNED : IDI_KK_PAW);
-    lstrcpynW(g_icon.szTip, g_locked ? L"KediKilit: kilitli" : L"KediKilit",
+    lstrcpynW(g_icon.szTip, g_locked ? L"cat-lock-cpp: kilitli" : L"cat-lock-cpp",
               ARRAYSIZE(g_icon.szTip));
 }
 
@@ -55,7 +55,7 @@ void tray_set_locked(bool locked) {
 void tray_balloon(const wchar_t* text) {
     g_icon.uFlags = NIF_INFO;
     g_icon.dwInfoFlags = NIIF_WARNING;
-    lstrcpynW(g_icon.szInfoTitle, L"KediKilit", ARRAYSIZE(g_icon.szInfoTitle));
+    lstrcpynW(g_icon.szInfoTitle, L"cat-lock-cpp", ARRAYSIZE(g_icon.szInfoTitle));
     lstrcpynW(g_icon.szInfo, text, ARRAYSIZE(g_icon.szInfo));
     Shell_NotifyIconW(NIM_MODIFY, &g_icon);
 }

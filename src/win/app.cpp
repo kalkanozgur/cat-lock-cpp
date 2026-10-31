@@ -447,17 +447,17 @@ HWND create_window(HINSTANCE instance) {
     window_class.lpfnWndProc = window_proc;
     window_class.hInstance = instance;
     window_class.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(IDI_KK_PAW));
-    window_class.lpszClassName = L"KediKilitWindow";
+    window_class.lpszClassName = L"CatLockCppWindow";
     if (RegisterClassExW(&window_class) == 0) {
         return nullptr;
     }
     // Message-only pencere TaskbarCreated yayınını almaz: görünmez normal pencere.
-    return CreateWindowExW(WS_EX_TOOLWINDOW, window_class.lpszClassName, L"KediKilit", WS_POPUP, 0,
-                           0, 0, 0, nullptr, nullptr, instance, nullptr);
+    return CreateWindowExW(WS_EX_TOOLWINDOW, window_class.lpszClassName, L"cat-lock-cpp", WS_POPUP,
+                           0, 0, 0, 0, nullptr, nullptr, instance, nullptr);
 }
 
 void fatal(const wchar_t* text) {
-    MessageBoxW(nullptr, text, L"KediKilit", MB_OK | MB_ICONERROR);
+    MessageBoxW(nullptr, text, L"cat-lock-cpp", MB_OK | MB_ICONERROR);
 }
 
 }  // namespace
@@ -469,6 +469,9 @@ int run_app(HINSTANCE instance) {
     }
     log_init(g_app.paths.log);
     log_line("start");
+    if (g_app.paths.migrated) {
+        log_line("settings migrated from KediKilit");
+    }
 
     g_app.window = create_window(instance);
     if (g_app.window == nullptr) {

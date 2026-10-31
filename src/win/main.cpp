@@ -6,7 +6,7 @@
 
 int WINAPI WinMain(HINSTANCE instance, HINSTANCE, LPSTR, int) {
     // Tek instance. Yükseltilmiş kopya varken mutex'e erişim reddedilir: o da "var" demektir.
-    const HANDLE mutex = CreateMutexW(nullptr, FALSE, L"Local\\KediKilit.SingleInstance");
+    const HANDLE mutex = CreateMutexW(nullptr, FALSE, L"Local\\CatLockCpp.SingleInstance");
     if (mutex == nullptr || GetLastError() == ERROR_ALREADY_EXISTS) {
         if (mutex != nullptr) {
             CloseHandle(mutex);

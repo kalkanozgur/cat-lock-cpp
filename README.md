@@ -1,4 +1,4 @@
-# kedi-kilit
+# cat-lock-cpp
 
 Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulaması. Kilitliyken Logitech G213 kırmızı nefes alır; rakam koduyla açılır.
 
@@ -45,28 +45,33 @@ cmake --build --preset debug      # veya: --preset release
 ctest --preset debug
 ```
 
-VS Code: alt çubuktan preset seç → **Build**. Çıktı: `build\Debug\kedi-kilit.exe`, `build\Release\kedi-kilit.exe`.
+VS Code: alt çubuktan preset seç → **Build**. Çıktı: `build\Debug\cat-lock-cpp.exe`, `build\Release\cat-lock-cpp.exe`. Release paketi: `cmake --build --preset release --target dist` → `build\dist\cat-lock-cpp-<sürüm>-win-x64.zip`.
 
-> ⚠️ Claude Code `kedi-kilit.exe`'yi **asla** çalıştırmaz — kilitlenirsin ve o açamaz. Çalıştırma testleri sende. İlk testleri **Debug** ile yap: 30 s sonra kendiliğinden açılır.
+> ⚠️ Claude Code `cat-lock-cpp.exe`'yi **asla** çalıştırmaz — kilitlenirsin ve o açamaz. Çalıştırma testleri sende. İlk testleri **Debug** ile yap: 30 s sonra kendiliğinden açılır.
 
 ## Kurulum (oturum açılışında, yüksek yetkiyle)
 
-Önce Release derle, açık kopyayı tepsiden kapat. Yönetici PowerShell:
+Release zip'ini açıp içinden veya repodan (önce Release derle) çalıştır. Build klasöründen açık kopyayı tepsiden kapat. Yönetici PowerShell:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\register-task.ps1            # kur veya güncelle
-powershell -ExecutionPolicy Bypass -File .\scripts\register-task.ps1 -Remove    # kaldır
 ```
 
-- Release exe'yi `C:\Program Files\KediKilit\`'e kopyalar, Görev Zamanlayıcı'ya "oturum açılışında, en yüksek ayrıcalıklarla" görev ekler ve hemen başlatır.
+Kaldırma: `scripts\uninstall.cmd` dosyasına çift tıkla (zip'te de var). Görevi, kurulu dosyaları ve eski `KediKilit` kurulumunu siler, yönetici izni ister. Ayar ve logu (kilit kodu dahil) da silmek için yönetici PowerShell:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\uninstall.ps1 -Purge
+```
+
+- Exe'yi `C:\Program Files\CatLockCpp\`'ye kopyalar, Görev Zamanlayıcı'ya "oturum açılışında, en yüksek ayrıcalıklarla" görev ekler ve hemen başlatır.
 - Yeni sürüm için aynı komut yeterli: kurulu kopyayı durdurur, üzerine yazar, yeniden başlatır.
-- Kaldırma ayar ve logu silmez.
+- Eski `KediKilit` görevi ve kurulumu varsa kaldırılır. Ayar ve log ilk açılışta `%LOCALAPPDATA%\CatLockCpp`'ye taşınır.
 - Yüksek yetki gerekçesi: yönetici olarak çalışan bir pencere odaktayken normal yetkili hook tuşları göremez (UIPI).
 - Exe `Program Files`'ta: yükseltilmiş görev, kullanıcının değiştirebileceği bir yoldan çalışmaz; ayrıca çalışırken yeniden derleme çakışmaz.
 
-## Ayarlar — `%LOCALAPPDATA%\KediKilit\kedi-kilit.ini`
+## Ayarlar — `%LOCALAPPDATA%\CatLockCpp\cat-lock-cpp.ini`
 
-Şablon: `config/kedi-kilit.example.ini`. **Kod tanımlı değilse uygulama kilitlemez.**
+Şablon: `config/cat-lock-cpp.example.ini`. **Kod tanımlı değilse uygulama kilitlemez.**
 
 | Bölüm / anahtar | Varsayılan | Açıklama |
 |---|---|---|
@@ -82,7 +87,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\register-task.ps1 -Remove    
 | `[led] enabled` | `1` | G213 aydınlatması |
 | `[led] normal_color` | `FFFFFF` | Kilit açıldıktan sonraki sabit renk, `RRGGBB` |
 
-Log: `%LOCALAPPDATA%\KediKilit\kedi-kilit.log` — kilit/açma olayları ve sebepleri, LED durumu. Kod ve basılan tuşlar yazılmaz.
+Log: `%LOCALAPPDATA%\CatLockCpp\cat-lock-cpp.log` — kilit/açma olayları ve sebepleri, LED durumu. Kod ve basılan tuşlar yazılmaz.
 
 Kod `.ini`'de düz metin: tehdit modeli kediler; kişilere karşı bir güvenlik aracı değildir.
 
@@ -101,18 +106,18 @@ Kod `.ini`'de düz metin: tehdit modeli kediler; kişilere karşı bir güvenlik
 | Yönetici penceresi odaktayken kısayol çalışmıyor | Uygulama yükseltilmiş değil → Görev Zamanlayıcı ile başlat |
 | Kilit kendiliğinden düşüyor | Hook zaman aşımı; log'da `hook reinstall` satırı → bildir |
 | Oyunda yanlışlıkla kilitlendi | `pause_in_fullscreen=1` · eşikleri artır · tepsiden kedi algılamayı kapat |
-| `LNK1104: cannot open kedi-kilit.exe` | Debug exe açık → tepsiden **Çıkış** |
+| `LNK1104: cannot open cat-lock-cpp.exe` | Debug exe açık → tepsiden **Çıkış** |
 
 ## Klasör yapısı
 
 ```
-kedi-kilit/
+cat-lock-cpp/
   CMakeLists.txt  CMakePresets.json  README.md  CLAUDE.md  CPP-PLAN.md
   src/core/      platformdan bağımsız mantık (testli)
   src/win/       Win32: hook, LED, overlay, tepsi
   tests/         kk_core_tests
-  config/        kedi-kilit.example.ini
-  scripts/       register-task.ps1
+  config/        cat-lock-cpp.example.ini
+  scripts/       register-task.ps1, uninstall.cmd, uninstall.ps1
   legacy/        kedi-kilit.ahk, LogitechLedEnginesWrapper.dll
   docs/          DURUM.md, kurulum.md, claude-kurallar.md
   .claude/       settings.json, skills/oturum-logu

@@ -5,7 +5,9 @@
     ],
     "deny": [
       "Bash(*kedi-kilit.exe*)",
-      "PowerShell(*kedi-kilit.exe*)"
+      "PowerShell(*kedi-kilit.exe*)",
+      "Bash(*cat-lock-cpp.exe*)",
+      "PowerShell(*cat-lock-cpp.exe*)"
     ]
   }
 }
