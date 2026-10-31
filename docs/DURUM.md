@@ -7,6 +7,7 @@
 
 - **Adım 2 — win (31.10.2026):** tepsi, ini, log, hook'lar, kilit/aç, watchdog, hook sağlık kontrolü. Kullanıcı Debug'da doğruladı.
 - **Adım 4 — overlay (31.10.2026):** kullanıcı isteğiyle Adım 3'ten önce yapıldı, pati ikonları eklendi. Kullanıcı "şahane çalışıyor" dedi; çoklu monitör ve farklı DPI ayrıca teyit edilmedi. Debug ve Release 0 uyarı, `kk_core_tests` 41/41.
+- **Adım 6 — kedi algılama (31.10.2026):** `cat_detector` + testler, tepsiden aç/kapa, tam ekran askısı. Debug ve Release 0 uyarı, `kk_core_tests` 74/74. Kullanıcı isteğiyle commit edildi; bitiş koşulu "oyunda yanlış tetik yok" henüz doğrulanmadı.
 
 ## Sıradaki
 
@@ -26,7 +27,8 @@
 - Tuş tekrarı ayıklanmaz: bırakma olayı kaybolursa (Ctrl+Alt+Del) o rakam yazılamaz, kilit açılamazdı.
 - Numpad, VK tanınmazsa scan koduyla da tanınır (extended olmayan).
 - Ayar aralıkları: `cat_min_simultaneous` 3–32, `cat_min_distinct` 3–64, `cat_window_ms` 50–5000, `idle_lock_min` 0–1440, `alpha` 0–255. Aralık dışı değer varsayılanda kalır.
-- Overlay (Adım 4): kullanıcı isteğiyle kilitliyken tüm monitörler siyah katmanla yaklaşık %50 kararır; varsayılan `alpha` 60'tan 128'e alındı.
+- Overlay (Adım 4): kilitliyken tüm monitörler siyah katmanla kararır. %50 kullanıcıya fazla geldi; varsayılan `alpha` 77 (yaklaşık %30).
+- Kedi algılamada Space ve WASD de modifier gibi sayılmaz (kullanıcı isteği, oyunlar için). Bedeli: kedi yalnız bu tuşlara basarsa algılanmaz.
 - Tepsi ikonu kullanıcı isteğiyle: açıkken kedi patisi, kilitliyken üstü çizili pati. Dosyalar `src/win/res/`, üretici `scripts/make-icons.ps1`.
 - Overlay kilitte kurulur, açılışta yok edilir; `WM_DISPLAYCHANGE` ile monitör değişiminde yeniden kurulur. Exclusive tam ekran oyunlarda görünmeyebilir.
 - `ConfigIssue` değer ve bilinmeyen anahtar adı taşımaz; kod loga geçemez.

@@ -14,6 +14,7 @@ static_assert(kk::vk::kClear == VK_CLEAR);
 static_assert(kk::vk::kShift == VK_SHIFT);
 static_assert(kk::vk::kControl == VK_CONTROL);
 static_assert(kk::vk::kMenu == VK_MENU);
+static_assert(kk::vk::kSpace == VK_SPACE);
 static_assert(kk::vk::kPrior == VK_PRIOR);
 static_assert(kk::vk::kNext == VK_NEXT);
 static_assert(kk::vk::kEnd == VK_END);

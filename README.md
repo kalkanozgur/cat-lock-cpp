@@ -12,7 +12,7 @@ Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulam
 | Açma | Rakam kodu — üst sıra veya numpad (NumLock kapalıyken de) |
 | Kedi algılama | Çok tuşa aynı anda ya da insanüstü hızda basılınca otomatik kilit |
 | Boşta kilit | N dakika girdi yoksa (varsayılan kapalı) |
-| Overlay | Kilitliyken tüm monitörler yaklaşık %50 kararır |
+| Overlay | Kilitliyken tüm monitörler yaklaşık %30 kararır |
 | LED | Kilitli: kırmızı yanıp söner · Açılış: 0,5 s yeşil → G HUB profiline döner |
 | Tepsi | Kilitle · Kedi algılama aç/kapa · Ayar dosyası · Log klasörü · Çıkış |
 
@@ -73,12 +73,12 @@ Yönetici PowerShell:
 | `[lock] code` | — | 4–16 rakam |
 | `[lock] hotkey` | `both` | `pause` / `ctrl_alt_l` / `both` |
 | `[auto] cat_detect` | `1` | Kedi algılama |
-| `[auto] cat_min_simultaneous` | `4` | Modifier hariç eşzamanlı basılı tuş |
+| `[auto] cat_min_simultaneous` | `4` | Modifier, Space ve WASD hariç eşzamanlı basılı tuş |
 | `[auto] cat_window_ms` | `250` | Hız penceresi |
 | `[auto] cat_min_distinct` | `6` | Pencere içinde farklı tuş sayısı |
 | `[auto] idle_lock_min` | `0` | Boşta kilit süresi, `0` = kapalı |
 | `[auto] pause_in_fullscreen` | `1` | Tam ekran oyun/sunumda otomatik kilit yok |
-| `[overlay] enabled` / `alpha` | `1` / `128` | Karartma: `0` yok, `128` ≈ %50, `255` tam siyah |
+| `[overlay] enabled` / `alpha` | `1` / `77` | Karartma: `0` yok, `77` ≈ %30, `128` ≈ %50, `255` tam siyah |
 | `[led] enabled` | `1` | |
 
 Log: `%LOCALAPPDATA%\KediKilit\kedi-kilit.log` — kilit/açma olayları ve sebepleri, LED durumu. Kod ve basılan tuşlar yazılmaz.

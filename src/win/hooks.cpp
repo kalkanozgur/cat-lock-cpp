@@ -14,6 +14,8 @@ struct State {
     HHOOK keyboard = nullptr;
     HHOOK mouse = nullptr;
     CodeMatcher matcher;
+    CatDetector cat;
+    bool cat_enabled = false;
     LockHotkey hotkey = LockHotkey::Both;
     bool locked = false;
     DWORD last_event = 0;
@@ -51,6 +53,7 @@ LRESULT CALLBACK keyboard_proc(int code, WPARAM message, LPARAM data) {
             const KeyEvent event{key.vkCode, key.scanCode, (key.flags & LLKHF_EXTENDED) != 0};
             if (g.matcher.on_keydown(event)) {
                 g.locked = false;
+                g.cat.reset();
                 PostMessageW(g.notify, WM_KK_UNLOCKED, 0, 0);
             }
             return 1;
@@ -67,6 +70,12 @@ LRESULT CALLBACK keyboard_proc(int code, WPARAM message, LPARAM data) {
         return 1;
     }
     g.key_down[index] = down;
+    // Yazılımla gönderilen tuşlar (şifre yöneticisi, makro) kedi değildir. Tuş yutulmaz:
+    // tam ekran askısına ana döngü karar verir, oyun tuşunu kaybetmesin.
+    if (g.cat_enabled && (key.flags & LLKHF_INJECTED) == 0 &&
+        g.cat.on_key(key.vkCode, down, key.time)) {
+        PostMessageW(g.notify, WM_KK_CAT, 0, 0);
+    }
     return CallNextHookEx(nullptr, code, message, data);
 }
 
@@ -166,19 +175,24 @@ void hooks_uninstall() {
     g.locked = false;
 }
 
-void hooks_configure(std::string_view code, LockHotkey hotkey) {
+void hooks_configure(std::string_view code, LockHotkey hotkey, bool cat_enabled,
+                     const CatThresholds& cat) {
     g.matcher.set_code(code);
     g.hotkey = hotkey;
+    g.cat_enabled = cat_enabled;
+    g.cat.configure(cat);
 }
 
 void hooks_lock() {
     g.matcher.reset();
+    g.cat.reset();
     g.locked = true;
 }
 
 void hooks_unlock() {
     g.locked = false;
     g.matcher.reset();
+    g.cat.reset();
 }
 
 bool hooks_locked() {

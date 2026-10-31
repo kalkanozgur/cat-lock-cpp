@@ -58,12 +58,14 @@ void tray_balloon(const wchar_t* text) {
     Shell_NotifyIconW(NIM_MODIFY, &g_icon);
 }
 
-int tray_show_menu(HWND window) {
+int tray_show_menu(HWND window, bool cat_detect) {
     const HMENU menu = CreatePopupMenu();
     if (menu == nullptr) {
         return kTrayNone;
     }
     AppendMenuW(menu, MF_STRING, kTrayLock, L"Kilitle");
+    AppendMenuW(menu, MF_STRING | (cat_detect ? MF_CHECKED : MF_UNCHECKED), kTrayToggleCat,
+                L"Kedi algılama");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, kTrayOpenConfig, L"Ayar dosyasını aç");
     AppendMenuW(menu, MF_STRING, kTrayOpenLogFolder, L"Log klasörü");

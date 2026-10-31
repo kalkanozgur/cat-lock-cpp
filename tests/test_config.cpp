@@ -22,7 +22,7 @@ TEST(empty_text_gives_defaults) {
     CHECK_EQ(r.config.idle_lock_min, 0);
     CHECK(r.config.pause_in_fullscreen);
     CHECK(r.config.overlay_enabled);
-    CHECK_EQ(r.config.overlay_alpha, 128);
+    CHECK_EQ(r.config.overlay_alpha, 77);
     CHECK(r.config.led_enabled);
 }
 
@@ -98,7 +98,7 @@ TEST(invalid_values_keep_default) {
          {"[overlay]\nalpha=256", "[overlay]\nalpha=-1", "[overlay]\nalpha=abc",
           "[overlay]\nalpha=60 ; yorum", "[overlay]\nalpha=", "[overlay]\nalpha=99999999999999"}) {
         const auto r = parse_config(text);
-        CHECK_EQ(r.config.overlay_alpha, 128);
+        CHECK_EQ(r.config.overlay_alpha, 77);
         CHECK_EQ(r.issues.size(), std::size_t{1});
     }
     CHECK_EQ(parse_config("[auto]\ncat_min_simultaneous=2").config.cat_min_simultaneous, 4);
@@ -147,6 +147,68 @@ TEST(describe_names_known_key) {
     const auto r = parse_config("[overlay]\nalpha=abc\n");
     CHECK(kk::describe(r.issues.at(0)).find("overlay.alpha") != std::string::npos);
     CHECK(kk::describe(r.issues.at(0)).find("satir 2") != std::string::npos);
+}
+
+TEST(set_ini_replaces_value_and_keeps_other_lines) {
+    const std::string text =
+        "; yorum\n[lock]\ncode=90817263\n\n[auto]\ncat_detect=1\ncat_window_ms=300\n";
+    CHECK_EQ(kk::set_ini_value(text, "auto", "cat_detect", "0"),
+             std::string("; yorum\n[lock]\ncode=90817263\n\n[auto]\ncat_detect=0\ncat_window_ms=300\n"));
+}
+
+TEST(set_ini_toggle_roundtrip_keeps_code) {
+    std::string text = "[lock]\r\ncode=90817263\r\n[auto]\r\ncat_detect=1\r\n";
+    text = kk::set_ini_value(text, "auto", "cat_detect", "0");
+    CHECK(!parse_config(text).config.cat_detect);
+    CHECK_EQ(parse_config(text).config.code, std::string("90817263"));
+    text = kk::set_ini_value(text, "auto", "cat_detect", "1");
+    CHECK(parse_config(text).config.cat_detect);
+    CHECK_EQ(text, std::string("[lock]\r\ncode=90817263\r\n[auto]\r\ncat_detect=1\r\n"));
+}
+
+TEST(set_ini_same_key_in_other_section_is_untouched) {
+    CHECK_EQ(kk::set_ini_value("[led]\nenabled=1\n[overlay]\nenabled=1\n", "overlay", "enabled", "0"),
+             std::string("[led]\nenabled=1\n[overlay]\nenabled=0\n"));
+}
+
+TEST(set_ini_ignores_commented_key) {
+    CHECK_EQ(kk::set_ini_value("[auto]\n;cat_detect=1\n", "auto", "cat_detect", "0"),
+             std::string("[auto]\ncat_detect=0\n;cat_detect=1\n"));
+}
+
+TEST(set_ini_replaces_every_duplicate) {
+    const auto text = kk::set_ini_value("[auto]\ncat_detect=1\ncat_detect=1\n", "auto", "cat_detect", "0");
+    CHECK(!parse_config(text).config.cat_detect);
+    CHECK(parse_config(text).issues.empty());
+}
+
+TEST(set_ini_adds_missing_key_to_section) {
+    CHECK_EQ(kk::set_ini_value("[auto]\nidle_lock_min=5\n", "auto", "cat_detect", "0"),
+             std::string("[auto]\ncat_detect=0\nidle_lock_min=5\n"));
+}
+
+TEST(set_ini_adds_missing_section) {
+    CHECK_EQ(kk::set_ini_value("[lock]\r\ncode=90817263", "auto", "cat_detect", "0"),
+             std::string("[lock]\r\ncode=90817263\r\n[auto]\r\ncat_detect=0\r\n"));
+}
+
+TEST(set_ini_section_header_on_last_line) {
+    CHECK_EQ(kk::set_ini_value("[auto]", "auto", "cat_detect", "0"),
+             std::string("[auto]\ncat_detect=0\n"));
+}
+
+TEST(set_ini_empty_text) {
+    CHECK_EQ(kk::set_ini_value("", "auto", "cat_detect", "0"), std::string("[auto]\ncat_detect=0\n"));
+}
+
+TEST(set_ini_matches_case_and_spaces) {
+    CHECK_EQ(kk::set_ini_value("[ AUTO ]\n  Cat_Detect = 1\n", "auto", "cat_detect", "0"),
+             std::string("[ AUTO ]\n  Cat_Detect =0\n"));
+}
+
+TEST(set_ini_keeps_bom) {
+    const auto text = kk::set_ini_value("\xEF\xBB\xBF[auto]\ncat_detect=1\n", "auto", "cat_detect", "0");
+    CHECK_EQ(text, std::string("\xEF\xBB\xBF[auto]\ncat_detect=0\n"));
 }
 
 TEST(example_ini_matches_defaults) {

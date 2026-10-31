@@ -83,10 +83,10 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 | LED kilit | `LogiLedInitWithName("KediKilit")` → `LogiLedSetTargetDevice(7 = ALL)` → 400 ms → `LogiLedFlashLighting(100,0,0, 0 = sonsuz, 400)` |
 | LED açılış | `LogiLedStopEffects` → `LogiLedSetLighting(0,100,0)` → 500 ms → `LogiLedShutdown` (G HUB profiline döner) |
 | LED init başarısız | LED'siz devam, bir kez logla |
-| Kedi algılama | Modifier hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş |
+| Kedi algılama | Modifier, Space ve WASD hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş. 3 s'den uzun basılı tuş eşzamanlı sayılmaz (`kCatHeldMaxAgeMs`); yazılımla gönderilen tuşlar sayılmaz; tuş tekrarı sayılmaz |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
 | Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise) |
-| Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 128 ≈ %50): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
+| Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 77 ≈ %30): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
 | Tepsi | Kilitle · Kedi algılama (aç/kapa) · Ayar dosyasını aç · Log klasörü · Çıkış |
 
 Eşik gerekçesi: 100 WPM ≈ 8,3 tuş/s → 250 ms'de ~2 tuş; 6 farklı tuş/250 ms ≈ 24 tuş/s, insan için gerçek dışı. Oyunlar WASD + Space + Shift ile 4–5 eşzamanlı tuş üretir → modifier hariç sayım + tam ekran askısı.

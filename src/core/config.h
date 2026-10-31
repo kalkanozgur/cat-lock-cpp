@@ -21,7 +21,7 @@ struct Config {
     bool pause_in_fullscreen = true;
 
     bool overlay_enabled = true;
-    int overlay_alpha = 128;  // siyah, yaklaşık %50 karartma
+    int overlay_alpha = 77;  // siyah, yaklaşık %30 karartma
 
     bool led_enabled = true;
 
@@ -47,5 +47,10 @@ ConfigResult parse_config(std::string_view text);
 
 // Loga yazılabilir tek satır.
 std::string describe(const ConfigIssue& issue);
+
+// Metinde [section] key değerini değiştirir, diğer satırlara dokunmaz. Anahtar yoksa
+// bölümün başına, bölüm de yoksa sona eklenir. section ve key küçük harf verilir.
+std::string set_ini_value(std::string_view text, std::string_view section, std::string_view key,
+                          std::string_view value);
 
 }  // namespace kk

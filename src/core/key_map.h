@@ -11,6 +11,7 @@ inline constexpr std::uint32_t kClear = 0x0C;
 inline constexpr std::uint32_t kShift = 0x10;
 inline constexpr std::uint32_t kControl = 0x11;
 inline constexpr std::uint32_t kMenu = 0x12;
+inline constexpr std::uint32_t kSpace = 0x20;
 inline constexpr std::uint32_t kPrior = 0x21;
 inline constexpr std::uint32_t kNext = 0x22;
 inline constexpr std::uint32_t kEnd = 0x23;

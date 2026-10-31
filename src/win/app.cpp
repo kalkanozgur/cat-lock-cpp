@@ -24,6 +24,7 @@ constexpr UINT WM_KK_TRAY = WM_APP + 3;
 constexpr UINT_PTR kTimerHealth = 1;
 constexpr UINT kHealthIntervalMs = 2000;
 constexpr std::int32_t kReinstallThrottleMs = 60000;
+constexpr std::int32_t kCatSuppressLogMs = 60000;
 #ifdef KK_WATCHDOG
 constexpr UINT_PTR kTimerWatchdog = 2;
 constexpr UINT kWatchdogMs = 30000;
@@ -44,6 +45,8 @@ struct App {
     bool reinstalled_before = false;
     DWORD last_reinstall_log = 0;
     int reinstalls_since_log = 0;
+    bool cat_suppress_logged = false;
+    DWORD last_cat_suppress_log = 0;
 };
 
 App g_app;
@@ -82,7 +85,10 @@ void reload_config() {
         log_line(describe(issue));
     }
     g_app.config = std::move(result.config);
-    hooks_configure(g_app.config.code, g_app.config.hotkey);
+    const Config& c = g_app.config;
+    hooks_configure(c.code, c.hotkey, c.cat_detect && c.has_code(),
+                    CatThresholds{c.cat_min_simultaneous, static_cast<std::uint32_t>(c.cat_window_ms),
+                                  c.cat_min_distinct});
     g_app.ini_loaded = true;
     log_line(g_app.config.has_code() ? "config loaded, code set" : "config loaded, no code");
 }
@@ -110,6 +116,33 @@ void lock(const char* reason) {
 #ifdef KK_WATCHDOG
     SetTimer(g_app.window, kTimerWatchdog, kWatchdogMs, nullptr);
 #endif
+}
+
+// D3D tam ekran, tam ekran pencere veya sunum.
+bool fullscreen_active() {
+    QUERY_USER_NOTIFICATION_STATE state{};
+    if (FAILED(SHQueryUserNotificationState(&state))) {
+        return false;
+    }
+    return state == QUNS_BUSY || state == QUNS_RUNNING_D3D_FULL_SCREEN ||
+           state == QUNS_PRESENTATION_MODE;
+}
+
+void on_cat() {
+    if (hooks_locked()) {
+        return;
+    }
+    if (g_app.config.pause_in_fullscreen && fullscreen_active()) {
+        const DWORD now = GetTickCount();
+        if (!g_app.cat_suppress_logged ||
+            tick_diff(now, g_app.last_cat_suppress_log) >= kCatSuppressLogMs) {
+            log_line("cat ignored, fullscreen");
+            g_app.cat_suppress_logged = true;
+            g_app.last_cat_suppress_log = now;
+        }
+        return;
+    }
+    lock("cat");
 }
 
 void on_unlocked(const char* reason) {
@@ -150,7 +183,7 @@ void check_hooks() {
     }
 }
 
-void open_config() {
+void ensure_ini() {
     const HANDLE file = CreateFileW(g_app.paths.ini.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW,
                                     FILE_ATTRIBUTE_NORMAL, nullptr);
     if (file != INVALID_HANDLE_VALUE) {
@@ -159,7 +192,48 @@ void open_config() {
         CloseHandle(file);
         log_line("config template created");
     }
+}
+
+void open_config() {
+    ensure_ini();
     ShellExecuteW(g_app.window, L"open", g_app.paths.ini.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
+}
+
+// Önce geçici dosya: yazma yarıda kalırsa kodu içeren .ini bozulmasın.
+bool write_ini(const std::string& text) {
+    const std::wstring temp = g_app.paths.ini + L".tmp";
+    const HANDLE file = CreateFileW(temp.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS,
+                                    FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (file == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+    DWORD written = 0;
+    const bool ok = WriteFile(file, text.data(), static_cast<DWORD>(text.size()), &written, nullptr) &&
+                    written == text.size() && FlushFileBuffers(file);
+    CloseHandle(file);
+    if (!ok || !MoveFileExW(temp.c_str(), g_app.paths.ini.c_str(),
+                            MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+        DeleteFileW(temp.c_str());
+        return false;
+    }
+    return true;
+}
+
+void toggle_cat_detect() {
+    ensure_ini();
+    const std::string text = read_file(g_app.paths.ini);
+    // Boş okuma geçici bir hata olabilir: yazarsak kod silinirdi.
+    if (text.empty()) {
+        log_line("cat toggle failed, config unreadable");
+        return;
+    }
+    const bool enable = !g_app.config.cat_detect;
+    if (!write_ini(set_ini_value(text, "auto", "cat_detect", enable ? "1" : "0"))) {
+        log_line("cat toggle failed, config not written");
+        return;
+    }
+    reload_config();
+    log_line(enable ? "cat detect on" : "cat detect off");
 }
 
 void open_log_folder() {
@@ -183,9 +257,12 @@ void on_tray_event(LPARAM event) {
         return;
     }
     reload_config();
-    switch (tray_show_menu(g_app.window)) {
+    switch (tray_show_menu(g_app.window, g_app.config.cat_detect)) {
         case kTrayLock:
             lock("tray");
+            break;
+        case kTrayToggleCat:
+            toggle_cat_detect();
             break;
         case kTrayOpenConfig:
             open_config();
@@ -228,6 +305,9 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
             return 0;
         case WM_KK_UNLOCKED:
             on_unlocked("code");
+            return 0;
+        case WM_KK_CAT:
+            on_cat();
             return 0;
         case WM_KK_TRAY:
             on_tray_event(lparam);

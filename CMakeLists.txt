@@ -25,6 +25,7 @@ endif()
 
 # core: Win32 include yok, testlenir.
 add_library(kk_core STATIC
+  src/core/cat_detector.cpp
   src/core/code_matcher.cpp
   src/core/config.cpp
   src/core/key_map.cpp
@@ -67,6 +68,7 @@ target_link_libraries(kedi-kilit PRIVATE
 # Testler: yalnız core, hook yok.
 add_executable(kk_core_tests
   tests/test_main.cpp
+  tests/test_cat_detector.cpp
   tests/test_code_matcher.cpp
   tests/test_config.cpp
   tests/test_hook_health.cpp

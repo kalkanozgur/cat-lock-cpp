@@ -170,6 +170,77 @@ ConfigResult parse_config(std::string_view text) {
     return result;
 }
 
+std::string set_ini_value(std::string_view text, std::string_view section, std::string_view key,
+                          std::string_view value) {
+    constexpr std::string_view kBom = "\xEF\xBB\xBF";
+    std::string out;
+    out.reserve(text.size() + key.size() + value.size() + section.size() + 8);
+    std::size_t pos = 0;
+    if (text.substr(0, kBom.size()) == kBom) {
+        out.append(kBom);
+        pos = kBom.size();
+    }
+
+    std::string eol = "\n";
+    bool in_section = false;
+    bool replaced = false;
+    std::size_t insert_at = std::string::npos;
+
+    while (pos < text.size()) {
+        const auto newline = text.find('\n', pos);
+        const std::size_t next = newline == std::string_view::npos ? text.size() : newline + 1;
+        const std::string_view raw = text.substr(pos, next - pos);
+        pos = next;
+
+        std::string_view line_eol;
+        if (!raw.empty() && raw.back() == '\n') {
+            line_eol = raw.size() >= 2 && raw[raw.size() - 2] == '\r' ? raw.substr(raw.size() - 2)
+                                                                      : raw.substr(raw.size() - 1);
+            eol = std::string(line_eol);
+        }
+
+        const std::string_view line = trim(raw.substr(0, raw.size() - line_eol.size()));
+        if (!line.empty() && line.front() == '[' && line.back() == ']') {
+            in_section = lower(trim(line.substr(1, line.size() - 2))) == section;
+            out.append(raw);
+            if (in_section && insert_at == std::string::npos) {
+                insert_at = out.size();
+            }
+            continue;
+        }
+        const auto equals = raw.find('=');
+        const bool comment = !line.empty() && (line.front() == ';' || line.front() == '#');
+        if (in_section && !comment && equals != std::string_view::npos &&
+            lower(trim(raw.substr(0, equals))) == key) {
+            out.append(raw.substr(0, equals + 1));
+            out.append(value);
+            out.append(line_eol);
+            replaced = true;
+            continue;
+        }
+        out.append(raw);
+    }
+
+    if (replaced) {
+        return out;
+    }
+    const bool needs_break = !out.empty() && out.back() != '\n';
+    std::string entry(key);
+    entry.append("=").append(value).append(eol);
+    if (insert_at != std::string::npos) {
+        if (needs_break && insert_at == out.size()) {
+            entry.insert(0, eol);
+        }
+        out.insert(insert_at, entry);
+    } else {
+        if (needs_break) {
+            out.append(eol);
+        }
+        out.append("[").append(section).append("]").append(eol).append(entry);
+    }
+    return out;
+}
+
 std::string describe(const ConfigIssue& issue) {
     std::string out = "ayar satir " + std::to_string(issue.line) + ": ";
     switch (issue.kind) {
