@@ -28,7 +28,7 @@
 ## Varsayımlar ve kararlar
 
 - Repo: `kalkanozgur/cat-lock-cpp` (private), kullanıcı kararı. Push yalnız kullanıcı isteyince.
-- Release private kalır (kullanıcı kararı), ilk sürüm `v1.0.0`. Yerel klasör adı `kedi-kilit` kaldı. Deny kuralı exe adını içeren her komutu engellediği için release'e zip yüklenir.
+- Release private kalır (kullanıcı kararı), `v1.0.0` yayımlandı (31.10.2026). Yerel klasör adı `kedi-kilit` kaldı. Deny kuralı exe adını içeren her komutu engellediği için release'e zip yüklenir.
 - Repoda olmayanlar (`.gitignore`), kullanıcı kararı: `kedi-kilit.ahk`, `LogitechLedEnginesWrapper.dll`, `third_party/logitech_led/`, kök dizindeki oturum dosyaları. Sonuç: yeni klonda `legacy/` yok. SDK artık kullanılmıyor; derleme ona bağlı değil.
 - Generator `Visual Studio 18 2026` (Build Tools 18.5, MSVC 14.50, CMake 4.4.4).
 - Kod sondan eşleşir (AHK davranışı): öndeki yanlış rakamlar açılışı engellemez.
