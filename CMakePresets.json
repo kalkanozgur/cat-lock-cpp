@@ -1,0 +1,17 @@
+{
+  "version": 3,
+  "configurePresets": [{
+    "name": "msvc-x64",
+    "generator": "Visual Studio 18 2026",
+    "architecture": { "value": "x64", "strategy": "set" },
+    "binaryDir": "${sourceDir}/build"
+  }],
+  "buildPresets": [
+    { "name": "debug",   "configurePreset": "msvc-x64", "configuration": "Debug" },
+    { "name": "release", "configurePreset": "msvc-x64", "configuration": "Release" }
+  ],
+  "testPresets": [
+    { "name": "debug", "configurePreset": "msvc-x64", "configuration": "Debug",
+      "output": { "outputOnFailure": true } }
+  ]
+}

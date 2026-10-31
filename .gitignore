@@ -17,3 +17,6 @@ LogitechLedEnginesWrapper.dll
 # Oturum logları
 20??-??-??_*.md
 *_usage.json
+
+# Logitech LED SDK (lisans; E:\Downloads\LED_SDK_9.00'dan yerel kopya)
+third_party/logitech_led/

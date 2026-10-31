@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "E:\\Documents\\Claude-Logs"
+    ],
+    "deny": [
+      "Bash(*kedi-kilit.exe*)",
+      "PowerShell(*kedi-kilit.exe*)"
+    ]
+  }
+}

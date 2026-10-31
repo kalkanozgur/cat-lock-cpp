@@ -118,4 +118,4 @@ kedi-kilit/
   .vscode/       settings.json, extensions.json
 ```
 
-`third_party/logitech_led/` Logitech SDK lisansına tabidir; repo dağıtılmaz.
+`third_party/logitech_led/` ve `legacy/` yalnız yerelde durur, repoya girmez (Logitech lisansı, parola). Yeni klonda SDK'nın `LogitechLEDLib.h` ve x64 `LogitechLEDLib.lib` dosyaları elle `third_party/logitech_led/` içine kopyalanır; eksikse CMake açık hatayla durur.
