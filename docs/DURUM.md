@@ -7,7 +7,7 @@
 
 - **Adım 2 — win (31.10.2026):** tepsi, ini, log, hook'lar, kilit/aç, watchdog, hook sağlık kontrolü. Kullanıcı Debug'da doğruladı.
 - **Adım 4 — overlay (31.10.2026):** kullanıcı isteğiyle Adım 3'ten önce yapıldı, pati ikonları eklendi. Kullanıcı "şahane çalışıyor" dedi; çoklu monitör ve farklı DPI ayrıca teyit edilmedi. Debug ve Release 0 uyarı, `kk_core_tests` 41/41.
-- **Adım 6 — kedi algılama (31.10.2026):** `cat_detector` + testler, tepsiden aç/kapa, tam ekran askısı. Debug ve Release 0 uyarı, `kk_core_tests` 74/74. Kullanıcı isteğiyle commit edildi; bitiş koşulu "oyunda yanlış tetik yok" henüz doğrulanmadı.
+- **Adım 6 — kedi algılama (31.10.2026):** `cat_detector` + testler, tepsiden aç/kapa, tam ekran askısı. Debug ve Release 0 uyarı, `kk_core_tests` 75/75. Tepsiye karartma seviyesi ve tam ekran ayarı eklendi. Kullanıcı oyun testi dahil tüm manuel testleri doğruladı.
 
 ## Sıradaki
 

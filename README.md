@@ -14,7 +14,7 @@ Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulam
 | Boşta kilit | N dakika girdi yoksa (varsayılan kapalı) |
 | Overlay | Kilitliyken tüm monitörler yaklaşık %30 kararır |
 | LED | Kilitli: kırmızı yanıp söner · Açılış: 0,5 s yeşil → G HUB profiline döner |
-| Tepsi | Kilitle · Kedi algılama aç/kapa · Ayar dosyası · Log klasörü · Çıkış |
+| Tepsi | Kilitle · Kedi algılama aç/kapa · Tam ekranda otomatik kilit yok · Karartma (Kapalı/%20/%30/%50) · Ayar dosyası · Log klasörü · Çıkış |
 
 ## Gereksinimler
 

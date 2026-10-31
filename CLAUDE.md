@@ -87,7 +87,7 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
 | Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise) |
 | Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 77 ≈ %30): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
-| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Ayar dosyasını aç · Log klasörü · Çıkış |
+| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Tam ekranda otomatik kilit yok (aç/kapa) · Karartma (Kapalı / %20 / %30 / %50) · Ayar dosyasını aç · Log klasörü · Çıkış |
 
 Eşik gerekçesi: 100 WPM ≈ 8,3 tuş/s → 250 ms'de ~2 tuş; 6 farklı tuş/250 ms ≈ 24 tuş/s, insan için gerçek dışı. Oyunlar WASD + Space + Shift ile 4–5 eşzamanlı tuş üretir → modifier hariç sayım + tam ekran askısı.
 

@@ -3,6 +3,7 @@
 #include <shellapi.h>
 
 #include <cstdint>
+#include <initializer_list>
 #include <string>
 #include <utility>
 
@@ -219,21 +220,56 @@ bool write_ini(const std::string& text) {
     return true;
 }
 
-void toggle_cat_detect() {
+struct IniSetting {
+    const char* section;
+    const char* key;
+    std::string value;
+};
+
+// Tepsi ayarlarının ortak yazma yolu. Yazılan değerler yalnız sabit menü seçenekleridir.
+bool apply_settings(std::initializer_list<IniSetting> settings) {
     ensure_ini();
-    const std::string text = read_file(g_app.paths.ini);
+    std::string text = read_file(g_app.paths.ini);
     // Boş okuma geçici bir hata olabilir: yazarsak kod silinirdi.
     if (text.empty()) {
-        log_line("cat toggle failed, config unreadable");
-        return;
+        log_line("setting failed, config unreadable");
+        return false;
     }
-    const bool enable = !g_app.config.cat_detect;
-    if (!write_ini(set_ini_value(text, "auto", "cat_detect", enable ? "1" : "0"))) {
-        log_line("cat toggle failed, config not written");
-        return;
+    for (const IniSetting& setting : settings) {
+        text = set_ini_value(text, setting.section, setting.key, setting.value);
+    }
+    if (!write_ini(text)) {
+        log_line("setting failed, config not written");
+        return false;
     }
     reload_config();
-    log_line(enable ? "cat detect on" : "cat detect off");
+    return true;
+}
+
+void toggle_cat_detect() {
+    const bool enable = !g_app.config.cat_detect;
+    if (apply_settings({{"auto", "cat_detect", enable ? "1" : "0"}})) {
+        log_line(enable ? "cat detect on" : "cat detect off");
+    }
+}
+
+void toggle_fullscreen_pause() {
+    const bool enable = !g_app.config.pause_in_fullscreen;
+    if (apply_settings({{"auto", "pause_in_fullscreen", enable ? "1" : "0"}})) {
+        log_line(enable ? "fullscreen pause on" : "fullscreen pause off");
+    }
+}
+
+void set_dim_off() {
+    if (apply_settings({{"overlay", "enabled", "0"}})) {
+        log_line("overlay off");
+    }
+}
+
+void set_dim(int alpha) {
+    if (apply_settings({{"overlay", "enabled", "1"}, {"overlay", "alpha", std::to_string(alpha)}})) {
+        log_line("overlay alpha " + std::to_string(alpha));
+    }
 }
 
 void open_log_folder() {
@@ -257,12 +293,30 @@ void on_tray_event(LPARAM event) {
         return;
     }
     reload_config();
-    switch (tray_show_menu(g_app.window, g_app.config.cat_detect)) {
+    const Config& config = g_app.config;
+    const TrayMenuState state{config.cat_detect, config.pause_in_fullscreen, config.overlay_enabled,
+                              config.overlay_alpha};
+    switch (tray_show_menu(g_app.window, state)) {
         case kTrayLock:
             lock("tray");
             break;
         case kTrayToggleCat:
             toggle_cat_detect();
+            break;
+        case kTrayToggleFullscreen:
+            toggle_fullscreen_pause();
+            break;
+        case kTrayDimOff:
+            set_dim_off();
+            break;
+        case kTrayDim20:
+            set_dim(kAlpha20);
+            break;
+        case kTrayDim30:
+            set_dim(kAlpha30);
+            break;
+        case kTrayDim50:
+            set_dim(kAlpha50);
             break;
         case kTrayOpenConfig:
             open_config();

@@ -58,14 +58,43 @@ void tray_balloon(const wchar_t* text) {
     Shell_NotifyIconW(NIM_MODIFY, &g_icon);
 }
 
-int tray_show_menu(HWND window, bool cat_detect) {
+int tray_show_menu(HWND window, const TrayMenuState& state) {
     const HMENU menu = CreatePopupMenu();
-    if (menu == nullptr) {
+    const HMENU dim_menu = CreatePopupMenu();
+    if (menu == nullptr || dim_menu == nullptr) {
+        if (menu != nullptr) {
+            DestroyMenu(menu);
+        }
+        if (dim_menu != nullptr) {
+            DestroyMenu(dim_menu);
+        }
         return kTrayNone;
     }
+    AppendMenuW(dim_menu, MF_STRING, kTrayDimOff, L"Kapalı");
+    AppendMenuW(dim_menu, MF_STRING, kTrayDim20, L"%20");
+    AppendMenuW(dim_menu, MF_STRING, kTrayDim30, L"%30");
+    AppendMenuW(dim_menu, MF_STRING, kTrayDim50, L"%50");
+    // ini'de elle verilmiş başka bir alpha varsa hiçbir seviye işaretlenmez.
+    int checked = kTrayNone;
+    if (!state.overlay_enabled) {
+        checked = kTrayDimOff;
+    } else if (state.overlay_alpha == kAlpha20) {
+        checked = kTrayDim20;
+    } else if (state.overlay_alpha == kAlpha30) {
+        checked = kTrayDim30;
+    } else if (state.overlay_alpha == kAlpha50) {
+        checked = kTrayDim50;
+    }
+    if (checked != kTrayNone) {
+        CheckMenuRadioItem(dim_menu, kTrayDimOff, kTrayDim50, checked, MF_BYCOMMAND);
+    }
+
     AppendMenuW(menu, MF_STRING, kTrayLock, L"Kilitle");
-    AppendMenuW(menu, MF_STRING | (cat_detect ? MF_CHECKED : MF_UNCHECKED), kTrayToggleCat,
+    AppendMenuW(menu, MF_STRING | (state.cat_detect ? MF_CHECKED : MF_UNCHECKED), kTrayToggleCat,
                 L"Kedi algılama");
+    AppendMenuW(menu, MF_STRING | (state.pause_in_fullscreen ? MF_CHECKED : MF_UNCHECKED),
+                kTrayToggleFullscreen, L"Tam ekranda otomatik kilit yok");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(dim_menu), L"Karartma");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, kTrayOpenConfig, L"Ayar dosyasını aç");
     AppendMenuW(menu, MF_STRING, kTrayOpenLogFolder, L"Log klasörü");

@@ -187,6 +187,17 @@ TEST(set_ini_adds_missing_key_to_section) {
              std::string("[auto]\ncat_detect=0\nidle_lock_min=5\n"));
 }
 
+TEST(set_ini_two_keys_share_new_section) {
+    std::string text = "[lock]\ncode=90817263\n";
+    text = kk::set_ini_value(text, "overlay", "enabled", "1");
+    text = kk::set_ini_value(text, "overlay", "alpha", "51");
+    const auto parsed = parse_config(text);
+    CHECK(parsed.issues.empty());
+    CHECK(parsed.config.overlay_enabled);
+    CHECK_EQ(parsed.config.overlay_alpha, 51);
+    CHECK_EQ(parsed.config.code, std::string("90817263"));
+}
+
 TEST(set_ini_adds_missing_section) {
     CHECK_EQ(kk::set_ini_value("[lock]\r\ncode=90817263", "auto", "cat_detect", "0"),
              std::string("[lock]\r\ncode=90817263\r\n[auto]\r\ncat_detect=0\r\n"));
