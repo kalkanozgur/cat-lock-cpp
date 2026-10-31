@@ -9,8 +9,10 @@
 
 #include "core/config.h"
 #include "core/hook_health.h"
+#include "core/idle_policy.h"
 #include "example_ini.h"
 #include "win/hooks.h"
+#include "win/led.h"
 #include "win/log.h"
 #include "win/overlay.h"
 #include "win/paths.h"
@@ -24,6 +26,8 @@ namespace {
 constexpr UINT WM_KK_TRAY = WM_APP + 3;
 constexpr UINT_PTR kTimerHealth = 1;
 constexpr UINT kHealthIntervalMs = 2000;
+constexpr UINT_PTR kTimerIdle = 3;
+constexpr UINT kIdleIntervalMs = 1000;
 constexpr std::int32_t kReinstallThrottleMs = 60000;
 constexpr std::int32_t kCatSuppressLogMs = 60000;
 #ifdef KK_WATCHDOG
@@ -48,6 +52,7 @@ struct App {
     int reinstalls_since_log = 0;
     bool cat_suppress_logged = false;
     DWORD last_cat_suppress_log = 0;
+    IdlePolicy idle;
 };
 
 App g_app;
@@ -90,6 +95,12 @@ void reload_config() {
     hooks_configure(c.code, c.hotkey, c.cat_detect && c.has_code(),
                     CatThresholds{c.cat_min_simultaneous, static_cast<std::uint32_t>(c.cat_window_ms),
                                   c.cat_min_distinct});
+    // Timer yalnız gerekince: boşta CPU ≈ 0.
+    if (c.idle_lock_min > 0) {
+        SetTimer(g_app.window, kTimerIdle, kIdleIntervalMs, nullptr);
+    } else {
+        KillTimer(g_app.window, kTimerIdle);
+    }
     g_app.ini_loaded = true;
     log_line(g_app.config.has_code() ? "config loaded, code set" : "config loaded, no code");
 }
@@ -117,6 +128,10 @@ void lock(const char* reason) {
 #ifdef KK_WATCHDOG
     SetTimer(g_app.window, kTimerWatchdog, kWatchdogMs, nullptr);
 #endif
+    // Sonda: cihaz yavaşsa kilit ve overlay beklemesin.
+    if (g_app.config.led_enabled) {
+        led_lock(g_app.window, g_app.config.led_normal_color);
+    }
 }
 
 // D3D tam ekran, tam ekran pencere veya sunum.
@@ -146,11 +161,32 @@ void on_cat() {
     lock("cat");
 }
 
+void on_idle_tick() {
+    if (hooks_locked()) {
+        return;
+    }
+    LASTINPUTINFO info{};
+    info.cbSize = sizeof(info);
+    if (!GetLastInputInfo(&info)) {
+        return;
+    }
+    const std::uint32_t idle_ms = GetTickCount() - info.dwTime;  // işaretsiz: taşmaya dayanıklı
+    if (!g_app.idle.due(idle_ms, g_app.config.idle_lock_min)) {
+        return;
+    }
+    if (g_app.config.pause_in_fullscreen && fullscreen_active()) {
+        return;
+    }
+    g_app.idle.mark_fired();
+    lock("idle");
+}
+
 void on_unlocked(const char* reason) {
 #ifdef KK_WATCHDOG
     KillTimer(g_app.window, kTimerWatchdog);
 #endif
     overlay_hide();
+    led_unlock(g_app.window);
     tray_set_locked(false);
     log_line(std::string("unlock ") + reason);
 }
@@ -272,6 +308,12 @@ void set_dim(int alpha) {
     }
 }
 
+void set_idle_minutes(int minutes) {
+    if (apply_settings({{"auto", "idle_lock_min", std::to_string(minutes)}})) {
+        log_line("idle lock min " + std::to_string(minutes));
+    }
+}
+
 void open_log_folder() {
     ShellExecuteW(g_app.window, L"open", g_app.paths.dir.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -282,8 +324,10 @@ void shut_down(const char* reason) {
     }
     g_app.shut_down = true;
     KillTimer(g_app.window, kTimerHealth);
+    KillTimer(g_app.window, kTimerIdle);
     hooks_uninstall();
     overlay_hide();
+    led_shutdown(g_app.window);
     tray_remove();
     log_line(std::string("exit ") + reason);
 }
@@ -295,8 +339,13 @@ void on_tray_event(LPARAM event) {
     reload_config();
     const Config& config = g_app.config;
     const TrayMenuState state{config.cat_detect, config.pause_in_fullscreen, config.overlay_enabled,
-                              config.overlay_alpha};
-    switch (tray_show_menu(g_app.window, state)) {
+                              config.overlay_alpha, config.idle_lock_min};
+    const int command = tray_show_menu(g_app.window, state);
+    if (command >= kTrayIdleFirst && command <= kTrayIdleLast) {
+        set_idle_minutes(kIdleChoices[command - kTrayIdleFirst]);
+        return;
+    }
+    switch (command) {
         case kTrayLock:
             lock("tray");
             break;
@@ -335,6 +384,10 @@ void on_tray_event(LPARAM event) {
 void on_timer(WPARAM id) {
     if (id == kTimerHealth) {
         check_hooks();
+    } else if (id == kTimerIdle) {
+        on_idle_tick();
+    } else if (led_on_timer(g_app.window, id)) {
+        return;
     }
 #ifdef KK_WATCHDOG
     if (id == kTimerWatchdog) {

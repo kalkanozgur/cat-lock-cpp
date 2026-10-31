@@ -5,6 +5,8 @@
 #include <string_view>
 #include <vector>
 
+#include "core/g213.h"
+
 namespace kk {
 
 enum class LockHotkey { Pause, CtrlAltL, Both };
@@ -17,13 +19,14 @@ struct Config {
     int cat_min_simultaneous = 4;
     int cat_window_ms = 250;
     int cat_min_distinct = 6;
-    int idle_lock_min = 0;  // 0 = kapalı
+    int idle_lock_min = 3;  // 0 = kapalı
     bool pause_in_fullscreen = true;
 
     bool overlay_enabled = true;
     int overlay_alpha = 77;  // siyah, yaklaşık %30 karartma
 
     bool led_enabled = true;
+    Rgb led_normal_color{255, 255, 255};  // kilit açıldıktan sonraki sabit renk
 
     bool has_code() const noexcept { return !code.empty(); }
 };

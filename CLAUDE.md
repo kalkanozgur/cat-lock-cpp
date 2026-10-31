@@ -14,7 +14,6 @@ Kediler klavyeye basınca klavye + fareyi kilitleyen Windows tepsi uygulaması. 
 |---|---|
 | `CPP-PLAN.md` | Kararlar, mimari, kapsam — **tek doğru kaynak** |
 | `legacy/kedi-kilit.ahk` | Yalnız yerelde, repoda yok. Eski davranış örneği; CPP-PLAN ile çelişirse CPP-PLAN geçerli |
-| `third_party/logitech_led/LogitechLEDLib.h` | LED API. Yalnız yerelde, repoda yok (lisans) |
 | `docs/claude-kurallar.md` | Genel çalışma kuralları kaynağı (`~/.claude/CLAUDE.md`'ye aktarıldı) |
 | `docs/kurulum.md` | İlk kurulumun kaydı |
 
@@ -23,7 +22,8 @@ Kediler klavyeye basınca klavye + fareyi kilitleyen Windows tepsi uygulaması. 
 - **`kedi-kilit.exe`'yi hiçbir şekilde başlatma** — doğrudan, `start`, `Invoke-Item`, debugger, CTest hedefi. Klavye + fareyi yutar; kullanıcı kilitli kalır, sen açamazsın. Çalıştırma testlerini yalnız kullanıcı yapar.
 - Yönetici yetkisi gerektiren iş yapma: Görev Zamanlayıcı, registry, `Program Files`'a yazma. Script yaz, kullanıcı çalıştırır.
 - `%LOCALAPPDATA%\KediKilit\kedi-kilit.ini`'yi okuma/yazdırma. Kilit kodu hiçbir log, commit, test fixture'ı veya mesaja girmez.
-- MinGW / GCC / clang-gnu kullanma: `LogitechLEDLib.lib` MSVC-mangled.
+- MinGW / GCC / clang-gnu kullanma: proje yalnız MSVC ile derlenir.
+- Logitech SDK veya G HUB bağımlılığı ekleme (kullanıcı kararı). G213 protokolü için GPL kodu (`g810-led`) kopyalama.
 - GoogleTest veya başka test framework'ü ekleme — bilinçli karar (`docs/claude-kurallar.md` 6a'dan sapma); `tests/harness.h` kullanılır.
 - Exe'ye harici bağımlılık (DLL, vcpkg, NuGet) ekleme.
 - Kullanıcı istemeden `git push`; `origin` (`kalkanozgur/cat-lock-cpp`, private) dışında remote ekleme veya push.
@@ -38,7 +38,7 @@ cmake --build --preset release
 ctest --preset debug             # yalnız kk_core_tests (hook yok, güvenli)
 ```
 
-- Hedef **0 uyarı**: `/W4 /WX /permissive- /utf-8 /EHsc`. SDK header'ı `SYSTEM` include (`/external:W0`).
+- Hedef **0 uyarı**: `/W4 /WX /permissive- /utf-8 /EHsc`.
 - UTF-8 metinleri doğrudan yaz; `"\xC3\x97abc"` gibi `\xHH` + hex harf dizilerinden kaçın (MSVC C7744).
 - Raporda her zaman: uyarı sayısı, test sayısı (geçen/toplam).
 - Uzun configure/build'i arka planda çalıştır; çıktıdan yalnız hata/uyarı satırlarını oku.
@@ -46,8 +46,6 @@ ctest --preset debug             # yalnız kk_core_tests (hook yok, güvenli)
 | Hata | Yapılacak |
 |---|---|
 | `LNK1104 kedi-kilit.exe` | Debug exe açık. Kill etme (elevated olabilir) → kullanıcıdan tepsiden Çıkış iste |
-| `LNK2038 RuntimeLibrary` | `.lib`'in CRT'si farklı → `dumpbin /directives` ile bak; `CMAKE_MSVC_RUNTIME_LIBRARY`'yi eşle (hedef `/MT` statik; `.lib` `/MD` ise `/MD`'ye geç, kullanıcıya bildir) |
-| `LNK2019` WinVerifyTrust / Crypt* / Image* | `wintrust.lib`, `crypt32.lib`, `imagehlp.lib` ekle |
 
 ## 4. Mimari
 
@@ -59,6 +57,7 @@ src/core/          Win32 include YOK → kk_core (static lib), testlenir
   cat_detector     tuş olay akışı → "kedi" kararı
   idle_policy      boşta süre + tam ekran → kilit kararı
   hook_health      hook ölü mü kararı (tick taşması dahil)
+  g213             G213 HID paketleri, renk ayrıştırma
 src/win/           hooks, led, overlay, tray, app, paths, log, main (WinMain), app.manifest
 tests/             harness.h + test_*.cpp → kk_core_tests.exe
 scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştırır)
@@ -80,14 +79,14 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 |---|---|
 | Kilitle | `Pause` ve/veya `Ctrl+Alt+L` (`[lock] hotkey`) |
 | Aç | Kod: üst sıra veya numpad rakamları |
-| LED kilit | `LogiLedInitWithName("KediKilit")` → `LogiLedSetTargetDevice(7 = ALL)` → 400 ms → `LogiLedFlashLighting(100,0,0, 0 = sonsuz, 400)` |
-| LED açılış | `LogiLedStopEffects` → `LogiLedSetLighting(0,100,0)` → 500 ms → `LogiLedShutdown` (G HUB profiline döner) |
-| LED init başarısız | LED'siz devam, bir kez logla |
+| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes, 1 s |
+| LED açılış | Yeşil → 500 ms → `[led] normal_color` (varsayılan `FFFFFF`). Mevcut renk okunamaz, profile dönüş yok |
+| LED cihaz yok / yazma hatası | LED'siz devam, bir kez logla; her kilitte yeniden denenir |
 | Kedi algılama | Modifier, Space ve WASD hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş. 3 s'den uzun basılı tuş eşzamanlı sayılmaz (`kCatHeldMaxAgeMs`); yazılımla gönderilen tuşlar sayılmaz; tuş tekrarı sayılmaz |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
-| Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise) |
+| Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise), varsayılan 3 dk; boşta kalma başına bir kilit (`IdlePolicy`) |
 | Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 77 ≈ %30): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
-| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Tam ekranda otomatik kilit yok (aç/kapa) · Karartma (Kapalı / %20 / %30 / %50) · Ayar dosyasını aç · Log klasörü · Çıkış |
+| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Tam ekranda otomatik kilit yok (aç/kapa) · Boşta kilit (Kapalı / 1 / 3 / 5 / 10 dk) · Karartma (Kapalı / %20 / %30 / %50) · Ayar dosyasını aç · Log klasörü · Çıkış |
 
 Eşik gerekçesi: 100 WPM ≈ 8,3 tuş/s → 250 ms'de ~2 tuş; 6 farklı tuş/250 ms ≈ 24 tuş/s, insan için gerçek dışı. Oyunlar WASD + Space + Shift ile 4–5 eşzamanlı tuş üretir → modifier hariç sayım + tam ekran askısı.
 
@@ -116,7 +115,7 @@ Boşta working set ≤ 3 MB · Release exe ≤ 500 KB · boşta CPU ≈ 0 (timer
 | 0 | İlk kurulum (`docs/kurulum.md`) | İskelet derleniyor, örnek test geçiyor, ilk commit |
 | 1 | core: `config`, `key_map`, `code_matcher` + testler | ctest yeşil |
 | 2 | win: tepsi, ini, log, hook'lar, kilit/aç, watchdog, hook sağlık kontrolü | Kullanıcı Debug'da kilit/aç doğruladı |
-| 3 | LED | Kırmızı yanıp sönme → yeşil → G HUB profili |
+| 3 | LED (doğrudan HID) | Kırmızı nefes → yeşil → `normal_color` |
 | 4 | Overlay | Çoklu monitör + farklı DPI |
 | 5 | Boşta kilit + tam ekran askısı (`idle_policy` testli) | |
 | 6 | Kedi algılama (`cat_detector` testli) + tepsi aç/kapa | Oyunda yanlış tetik yok |

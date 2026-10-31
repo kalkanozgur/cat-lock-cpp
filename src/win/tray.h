@@ -12,6 +12,8 @@ enum TrayCommand : int {
     kTrayDim20,
     kTrayDim30,
     kTrayDim50,
+    kTrayIdleFirst,
+    kTrayIdleLast = kTrayIdleFirst + 4,  // kIdleChoices ile aynı uzunluk
     kTrayOpenConfig,
     kTrayOpenLogFolder,
     kTrayExit,
@@ -22,7 +24,11 @@ struct TrayMenuState {
     bool pause_in_fullscreen;
     bool overlay_enabled;
     int overlay_alpha;
+    int idle_lock_min;
 };
+
+// Boşta kilit alt menüsü, dakika. 0 = kapalı.
+inline constexpr int kIdleChoices[] = {0, 1, 3, 5, 10};
 
 // Karartma alt menüsü: alpha = yüzde * 255 / 100, yuvarlanmış.
 inline constexpr int kAlpha20 = 51;

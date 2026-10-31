@@ -38,6 +38,7 @@ constexpr BoolKey kBoolKeys[] = {
 
 constexpr const char* kCodeKey = "lock.code";
 constexpr const char* kHotkeyKey = "lock.hotkey";
+constexpr const char* kNormalColorKey = "led.normal_color";
 
 std::string_view trim(std::string_view s) noexcept {
     constexpr std::string_view kSpace = " \t\r";
@@ -96,6 +97,14 @@ const char* apply(Config& config, const std::string& name, std::string_view valu
             *invalid = true;
         }
         return kHotkeyKey;
+    }
+    if (name == kNormalColorKey) {
+        if (const auto color = parse_rgb(value)) {
+            config.led_normal_color = *color;
+        } else {
+            *invalid = true;
+        }
+        return kNormalColorKey;
     }
     for (const IntKey& key : kIntKeys) {
         if (name == key.name) {

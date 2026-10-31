@@ -4,9 +4,9 @@ Mevcut çalışan sürüm: `kedi-kilit.ahk` (AutoHotkey v2) — referans davran�
 
 ## Kararlar (2026-10-31)
 - Toolchain: **MSVC + CMake**, x64, tek `.exe`, harici bağımlılık yok
-- LED: SDK `E:\Downloads\LED_SDK_9.00\LED\Lib\x64\LogitechLEDLib.lib` + `Include\LogitechLEDLib.h` statik link
-  - .lib, G HUB DLL'ini registry CLSID ile bulup imzasını doğrulayıp `LoadLibraryW` ile yüklüyor → ek link: `crypt32.lib`, `imagehlp.lib`
-  - MSVC ile derlenmiş, C++ mangled → MinGW ile linklenmez
+- LED (kullanıcı kararı, 31.10.2026): G HUB ve Logitech SDK yok; G213'e doğrudan HID
+  - Cihaz: VID `046D`, PID `C336`, üretici koleksiyonu `0xFF43`, 20 baytlık çıkış raporu. Windows `hid.lib` + `setupapi.lib`
+  - Protokol belgesiz, topluluk kaynaklı; GPL kod kopyalanmaz, yalnız bayt düzeni kullanılır
 - Yetki (UIPI): Görev Zamanlayıcı, oturum açılışında, **en yüksek ayrıcalıklarla**
 - İlk sürüm kapsamı:
   1. Kilit / kilit açma (kod ile)
@@ -21,9 +21,9 @@ Mevcut çalışan sürüm: `kedi-kilit.ahk` (AutoHotkey v2) — referans davran�
 | Kilitle | `Pause` veya `Ctrl+Alt+L` |
 | Aç | Kod (üst sıra veya numpad rakamları), araya giren rakam dışı tuş tamponu sıfırlar |
 | Kilitliyken | Tüm tuşlar + fare tuşları/tekerlek/hareket yutulur |
-| LED kilitli | `LogiLedInitWithName` → 400 ms → `LogiLedFlashLighting(100,0,0, 0=sonsuz, 400)` |
-| LED açılış | `LogiLedStopEffects` → yeşil 500 ms → `LogiLedShutdown` (G HUB profiline döner) |
-| Hedef cihaz | `LogiLedSetTargetDevice(LOGI_DEVICETYPE_ALL = 7)` |
+| LED kilitli | Klavyenin kırmızı nefes efekti, 1 s (AHK'den farklı, kullanıcı kararı) |
+| LED açılış | Yeşil 500 ms → `[led] normal_color` sabit rengi (varsayılan beyaz) |
+| Hedef cihaz | Yalnız G213 |
 
 ## Mimari
 - `WH_KEYBOARD_LL` + `WH_MOUSE_LL`, kilitliyken `return 1` (WM_MOUSEMOVE dahil → imleç donar)

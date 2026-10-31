@@ -8,10 +8,12 @@
 - **Adım 2 — win (31.10.2026):** tepsi, ini, log, hook'lar, kilit/aç, watchdog, hook sağlık kontrolü. Kullanıcı Debug'da doğruladı.
 - **Adım 4 — overlay (31.10.2026):** kullanıcı isteğiyle Adım 3'ten önce yapıldı, pati ikonları eklendi. Kullanıcı "şahane çalışıyor" dedi; çoklu monitör ve farklı DPI ayrıca teyit edilmedi. Debug ve Release 0 uyarı, `kk_core_tests` 41/41.
 - **Adım 6 — kedi algılama (31.10.2026):** `cat_detector` + testler, tepsiden aç/kapa, tam ekran askısı. Debug ve Release 0 uyarı, `kk_core_tests` 75/75. Tepsiye karartma seviyesi ve tam ekran ayarı eklendi. Kullanıcı oyun testi dahil tüm manuel testleri doğruladı.
+- **Adım 3 — LED (31.10.2026):** G HUB ve SDK yerine G213'e doğrudan HID (kullanıcı kararı): kırmızı nefes → 500 ms yeşil → `normal_color`. Kullanıcı Debug'da doğruladı. Cihaz açılışı 62–78 ms.
+- **Adım 5 — boşta kilit (31.10.2026):** `idle_policy` + testler, varsayılan 3 dk, tepsiden Kapalı/1/3/5/10 dk. Kullanıcı Debug'da doğruladı. Debug ve Release 0 uyarı, `kk_core_tests` 89/89.
 
 ## Sıradaki
 
-- **Adım 3:** LED. Bitti sayılır: kırmızı yanıp sönme → yeşil → G HUB profili.
+- **Adım 7:** `scripts/register-task.ps1` (kur/kaldır), Release, README güncelle. Bitti sayılır: oturum açılışında yüksek yetkiyle çalışıyor.
 
 ## Açık sorular
 
@@ -21,7 +23,7 @@
 ## Varsayımlar ve kararlar
 
 - Repo: `kalkanozgur/cat-lock-cpp` (private), kullanıcı kararı. Push yalnız kullanıcı isteyince.
-- Repoda olmayanlar (`.gitignore`), kullanıcı kararı: `kedi-kilit.ahk`, `LogitechLedEnginesWrapper.dll`, `third_party/logitech_led/`, kök dizindeki oturum dosyaları. Sonuç: yeni klonda `legacy/` ve SDK yok; CMake eksik SDK'da açık hatayla durur.
+- Repoda olmayanlar (`.gitignore`), kullanıcı kararı: `kedi-kilit.ahk`, `LogitechLedEnginesWrapper.dll`, `third_party/logitech_led/`, kök dizindeki oturum dosyaları. Sonuç: yeni klonda `legacy/` yok. SDK artık kullanılmıyor; derleme ona bağlı değil.
 - Generator `Visual Studio 18 2026` (Build Tools 18.5, MSVC 14.50, CMake 4.4.4).
 - Kod sondan eşleşir (AHK davranışı): öndeki yanlış rakamlar açılışı engellemez.
 - Tuş tekrarı ayıklanmaz: bırakma olayı kaybolursa (Ctrl+Alt+Del) o rakam yazılamaz, kilit açılamazdı.
@@ -33,3 +35,5 @@
 - Overlay kilitte kurulur, açılışta yok edilir; `WM_DISPLAYCHANGE` ile monitör değişiminde yeniden kurulur. Exclusive tam ekran oyunlarda görünmeyebilir.
 - `ConfigIssue` değer ve bilinmeyen anahtar adı taşımaz; kod loga geçemez.
 - Satır içi yorum desteklenmez.
+- G213 protokolü belgesiz; bayt düzeni `G213Colors` ve `g810-led`'den, GPL kod kopyalanmadı. Mevcut renk okunamaz, açılışta `normal_color` yazılır. Uygulama çökerse klavye kırmızıda kalabilir.
+- Boşta kilit, boşta kalma başına bir kez tetiklenir; yeni girdi gelince yeniden kurulur. Debug'da watchdog açtıktan sonra girdi olmadan yeniden kilitlemez: yoksa 30 s kilit döngüsüne girerdi. Release'te watchdog yok.

@@ -2,6 +2,8 @@
 
 #include <shellapi.h>
 
+#include <initializer_list>
+
 #include "win/res/resource.h"
 
 namespace kk::win {
@@ -61,14 +63,24 @@ void tray_balloon(const wchar_t* text) {
 int tray_show_menu(HWND window, const TrayMenuState& state) {
     const HMENU menu = CreatePopupMenu();
     const HMENU dim_menu = CreatePopupMenu();
-    if (menu == nullptr || dim_menu == nullptr) {
-        if (menu != nullptr) {
-            DestroyMenu(menu);
-        }
-        if (dim_menu != nullptr) {
-            DestroyMenu(dim_menu);
+    const HMENU idle_menu = CreatePopupMenu();
+    if (menu == nullptr || dim_menu == nullptr || idle_menu == nullptr) {
+        for (const HMENU created : {menu, dim_menu, idle_menu}) {
+            if (created != nullptr) {
+                DestroyMenu(created);
+            }
         }
         return kTrayNone;
+    }
+    constexpr const wchar_t* kIdleLabels[] = {L"Kapalı", L"1 dk", L"3 dk", L"5 dk", L"10 dk"};
+    static_assert(ARRAYSIZE(kIdleLabels) == ARRAYSIZE(kIdleChoices));
+    static_assert(kTrayIdleLast - kTrayIdleFirst + 1 == ARRAYSIZE(kIdleChoices));
+    for (int i = 0; i < static_cast<int>(ARRAYSIZE(kIdleChoices)); ++i) {
+        AppendMenuW(idle_menu, MF_STRING, static_cast<UINT_PTR>(kTrayIdleFirst + i), kIdleLabels[i]);
+        if (kIdleChoices[i] == state.idle_lock_min) {
+            CheckMenuRadioItem(idle_menu, kTrayIdleFirst, kTrayIdleLast, kTrayIdleFirst + i,
+                               MF_BYCOMMAND);
+        }
     }
     AppendMenuW(dim_menu, MF_STRING, kTrayDimOff, L"Kapalı");
     AppendMenuW(dim_menu, MF_STRING, kTrayDim20, L"%20");
@@ -94,6 +106,7 @@ int tray_show_menu(HWND window, const TrayMenuState& state) {
                 L"Kedi algılama");
     AppendMenuW(menu, MF_STRING | (state.pause_in_fullscreen ? MF_CHECKED : MF_UNCHECKED),
                 kTrayToggleFullscreen, L"Tam ekranda otomatik kilit yok");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(idle_menu), L"Boşta kilit");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(dim_menu), L"Karartma");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, kTrayOpenConfig, L"Ayar dosyasını aç");

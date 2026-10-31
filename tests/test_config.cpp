@@ -19,7 +19,7 @@ TEST(empty_text_gives_defaults) {
     CHECK_EQ(r.config.cat_min_simultaneous, 4);
     CHECK_EQ(r.config.cat_window_ms, 250);
     CHECK_EQ(r.config.cat_min_distinct, 6);
-    CHECK_EQ(r.config.idle_lock_min, 0);
+    CHECK_EQ(r.config.idle_lock_min, 3);
     CHECK(r.config.pause_in_fullscreen);
     CHECK(r.config.overlay_enabled);
     CHECK_EQ(r.config.overlay_alpha, 77);
@@ -241,4 +241,5 @@ TEST(example_ini_matches_defaults) {
     CHECK_EQ(r.config.overlay_enabled, d.overlay_enabled);
     CHECK_EQ(r.config.overlay_alpha, d.overlay_alpha);
     CHECK_EQ(r.config.led_enabled, d.led_enabled);
+    CHECK(r.config.led_normal_color == d.led_normal_color);
 }
