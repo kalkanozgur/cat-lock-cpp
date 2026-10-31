@@ -1,0 +1,19 @@
+# Derleme çıktıları
+build/
+out/
+.vs/
+*.user
+
+# Ayar dosyaları (kilit kodu içerir)
+*.ini
+!config/*.example.ini
+
+# Düz metin parola içeren eski AHK sürümü; hangi klasörde olursa olsun repoya girmez
+kedi-kilit.ahk
+
+# Logitech ikili dosyası (lisans)
+LogitechLedEnginesWrapper.dll
+
+# Oturum logları
+20??-??-??_*.md
+*_usage.json
