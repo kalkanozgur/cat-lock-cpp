@@ -3,8 +3,9 @@
 
 using kk::Rgb;
 
-TEST(led_pattern_lock_breathe_is_two_seconds) {
-    CHECK_EQ(kk::kLockBreathePeriodMs, std::uint16_t{2000});
+TEST(led_pattern_lock_breathe_matches_lenovo_slow) {
+    CHECK_EQ(kk::kLockBreathePeriodMs, std::uint16_t{3300});
+    CHECK_EQ(kk::kLenovoLockSpeed, std::uint8_t{1});
 }
 
 TEST(led_pattern_unlock_blinks_three_times) {
@@ -26,8 +27,8 @@ TEST(led_pattern_unlock_alternates_and_ends_green) {
     CHECK(kk::unlock_blink_color(kk::kUnlockBlinkSteps - 1) == kk::kUnlockColor);
 }
 
-TEST(g213_breathe_two_second_period_bytes) {
+TEST(g213_breathe_lock_period_bytes) {
     const auto packet = kk::g213_breathe(kk::kLockColor, kk::kLockBreathePeriodMs);
-    CHECK_EQ(packet[9], std::uint8_t{0x07});
-    CHECK_EQ(packet[10], std::uint8_t{0xD0});
+    CHECK_EQ(packet[9], std::uint8_t{0x0C});
+    CHECK_EQ(packet[10], std::uint8_t{0xE4});
 }

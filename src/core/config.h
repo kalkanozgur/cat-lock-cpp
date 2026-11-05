@@ -26,7 +26,7 @@ struct Config {
     int overlay_alpha = 77;  // siyah, yaklaşık %30 karartma
 
     bool led_enabled = true;
-    Rgb led_normal_color{255, 255, 255};  // kilit açıldıktan sonraki sabit renk
+    Rgb led_normal_color{0x80, 0x00, 0xFF};  // mor  // kilit açıldıktan sonraki sabit renk
 
     bool has_code() const noexcept { return !code.empty(); }
 };

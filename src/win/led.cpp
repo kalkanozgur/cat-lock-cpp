@@ -120,6 +120,17 @@ void led_unlock(HWND window) {
     }
 }
 
+void led_set_normal(Rgb color) {
+    g_normal_color = color;
+    if (g_state != State::Off) {
+        return;  // kilit/yanıp sönme bitince finish() bu rengi yazar
+    }
+    open_all();
+    broadcast([color](LedDevice& device) { return device.solid(color); });
+    g_active.clear();
+    g_state = State::Off;
+}
+
 bool led_on_timer(HWND window, WPARAM id) {
     if (id != kTimerRelease) {
         return false;

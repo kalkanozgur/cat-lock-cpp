@@ -35,7 +35,7 @@ TEST(parse_rgb_rejects_bad_values) {
 }
 
 TEST(config_normal_color_default_and_value) {
-    CHECK(kk::parse_config("").config.led_normal_color == Rgb(255, 255, 255));
+    CHECK(kk::parse_config("").config.led_normal_color == Rgb(0x80, 0x00, 0xFF));
     const auto result = kk::parse_config("[led]\nnormal_color=102030\n");
     CHECK(result.issues.empty());
     CHECK(result.config.led_normal_color == Rgb(0x10, 0x20, 0x30));
@@ -44,5 +44,5 @@ TEST(config_normal_color_default_and_value) {
 TEST(config_normal_color_invalid_keeps_default) {
     const auto result = kk::parse_config("[led]\nnormal_color=mavi\n");
     CHECK_EQ(result.issues.size(), std::size_t{1});
-    CHECK(result.config.led_normal_color == Rgb(255, 255, 255));
+    CHECK(result.config.led_normal_color == Rgb(0x80, 0x00, 0xFF));
 }

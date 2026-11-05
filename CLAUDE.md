@@ -79,14 +79,14 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 |---|---|
 | Kilitle | `Pause` ve/veya `Ctrl+Alt+L` (`[lock] hotkey`) |
 | Aç | Kod: üst sıra veya numpad rakamları |
-| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes, 2 s |
-| LED açılış | 3× yeşil yanıp sönme (150 ms adım) → `[led] normal_color` (varsayılan `FFFFFF`). Mevcut renk okunamaz, profile dönüş yok |
+| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes, 3,3 s (Lenovo kademe 1 ile senkron) |
+| LED açılış | 3× yeşil yanıp sönme (150 ms adım) → `[led] normal_color` (varsayılan `8000FF` mor; tepsiden seçilir). Mevcut renk okunamaz, profile dönüş yok |
 | LED cihaz yok / yazma hatası | LED'siz devam, bir kez logla; her kilitte yeniden denenir |
 | Kedi algılama | Modifier, Space ve WASD hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş. 3 s'den uzun basılı tuş eşzamanlı sayılmaz (`kCatHeldMaxAgeMs`); yazılımla gönderilen tuşlar sayılmaz; tuş tekrarı sayılmaz |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
 | Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise), varsayılan 3 dk; boşta kalma başına bir kilit (`IdlePolicy`) |
 | Overlay | Kilitliyken her monitör siyah katmanla kararır (`alpha` 77 ≈ %30): `WS_EX_LAYERED \| TRANSPARENT \| TOPMOST \| TOOLWINDOW \| NOACTIVATE` |
-| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Tam ekranda otomatik kilit yok (aç/kapa) · Boşta kilit (Kapalı / 1 / 3 / 5 / 10 dk) · Karartma (Kapalı / %20 / %30 / %50) · Ayar dosyasını aç · Log klasörü · Çıkış |
+| Tepsi | Kilitle · Kedi algılama (aç/kapa) · Tam ekranda otomatik kilit yok (aç/kapa) · Boşta kilit (Kapalı / 1 / 3 / 5 / 10 dk) · Karartma (Kapalı / %20 / %30 / %50) · Klavye ışığı (açılış rengi: Mor / Beyaz / Kırmızı / Turuncu / Sarı / Yeşil / Camgöbeği / Mavi / Pembe) · Ayar dosyasını aç · Log klasörü · Çıkış |
 
 Eşik gerekçesi: 100 WPM ≈ 8,3 tuş/s → 250 ms'de ~2 tuş; 6 farklı tuş/250 ms ≈ 24 tuş/s, insan için gerçek dışı. Oyunlar WASD + Space + Shift ile 4–5 eşzamanlı tuş üretir → modifier hariç sayım + tam ekran askısı.
 

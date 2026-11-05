@@ -13,8 +13,8 @@ Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulam
 | Kedi algılama | Çok tuşa aynı anda ya da insanüstü hızda basılınca otomatik kilit |
 | Boşta kilit | 3 dakika girdi yoksa (tepsiden değiştirilir veya kapatılır) |
 | Overlay | Kilitliyken tüm monitörler yaklaşık %30 kararır |
-| LED | G HUB gerekmez. Kilitli: kırmızı nefes (2 s) · Açılış: 3× yeşil yanıp sönme → `normal_color` |
-| Tepsi | Kilitle · Kedi algılama aç/kapa · Tam ekranda otomatik kilit yok · Boşta kilit (Kapalı/1/3/5/10 dk) · Karartma (Kapalı/%20/%30/%50) · Ayar dosyası · Log klasörü · Çıkış |
+| LED | G HUB gerekmez. Kilitli: G213, Lenovo 4 bölge laptop klavyesi ve G502 HERO birlikte kırmızı nefes · Açılış: 3× yeşil yanıp sönme → `normal_color` |
+| Tepsi | Kilitle · Kedi algılama aç/kapa · Tam ekranda otomatik kilit yok · Boşta kilit (Kapalı/1/3/5/10 dk) · Karartma (Kapalı/%20/%30/%50) · Klavye ışığı (açılış rengi, 9 renk) · Ayar dosyası · Log klasörü · Çıkış |
 
 ## Gereksinimler
 
@@ -85,7 +85,7 @@ powershell -ExecutionPolicy Bypass -File .\scripts\uninstall.ps1 -Purge
 | `[auto] pause_in_fullscreen` | `1` | Tam ekran oyun/sunumda otomatik kilit yok |
 | `[overlay] enabled` / `alpha` | `1` / `77` | Karartma: `0` yok, `77` ≈ %30, `128` ≈ %50, `255` tam siyah |
 | `[led] enabled` | `1` | G213 aydınlatması |
-| `[led] normal_color` | `FFFFFF` | Kilit açıldıktan sonraki sabit renk, `RRGGBB` |
+| `[led] normal_color` | `8000FF` (mor) | Kilit açıldıktan sonraki sabit renk, `RRGGBB` |
 
 Log: `%LOCALAPPDATA%\CatLockCpp\cat-lock-cpp.log` — kilit/açma olayları ve sebepleri, LED durumu. Kod ve basılan tuşlar yazılmaz.
 

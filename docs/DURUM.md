@@ -19,15 +19,17 @@
 
 ## Sıradaki
 
-- Sıradaki: **Adım 13 — nefes senkron ayarı + açılış rengi mor + tepsi menüsünden renk.**
+- Sıradaki: **Adım 14 — Logitech senkron ince ayarı + Logitech'te mor tonu.**
 - **Adım 9 — keşif (05.11.2026, tamam, salt okuma):**
   - Lenovo: ITE 8295 `048D:C963`, sayfa `FF89` usage `00CC`, 33 baytlık feature raporu → 4 bölge RGB. Vantage çalışmıyor.
   - Fare: G502 HERO `046D:C08B`, HID++ 2.0 uzun rapor (sayfa `FF00`, 20 bayt), 2 bölge. G HUB ajanı çalışmıyor.
   - `25A7:FA67` (CX 2.4G alıcı) aydınlatma cihazı değil, kapsam dışı.
 - **Adım 10 — LED arka uç arayüzü (05.11.2026, tamam):** `win/hid.*` ortak HID, `win/led_device.h` arayüz, `win/led_g213.cpp`; `led.cpp` bulunan tüm cihazlara aynı deseni gönderir, hata cihaz başına bir kez loglanır. 0 uyarı, 93/93.
+- **Adım 13 — senkron + renk menüsü (05.11.2026, tamam):** Lenovo kademe 1, Logitech 3300 ms; varsayılan `normal_color` `8000FF`; tepsi `Klavye ışığı` (9 renk), seçim anında uygulanır. Kullanıcı doğruladı. 0 uyarı, 101/101. Açık: ~3 nefesten sonra Lenovo önde; `8000FF` Logitech'lerde açık mavi görünüyor.
 - **Adım 12 — G502 HERO (05.11.2026, tamam):** `core/g502.h` (HID++ 2.0, 0x8070) + testler, `win/led_g502.cpp`; özellik index'i her açılışta IRoot'tan sorulur; efekt index'leri (1 sabit, 2 nefes) bu fareye sabit; kalıcılık 0 (RAM). Kullanıcı doğruladı. 0 uyarı, 101/101. Gözlem: laptop 3. nefeste, G213 2. nefeste → Logitech süresi uzun kalıyor.
 - **Adım 11 — Lenovo klavye (05.11.2026, tamam):** `core/lenovo_4zone.h` (feature 0xCC, 33 bayt) + testler, `win/led_lenovo.cpp`, `hid::set_feature`. PID değil koleksiyon (FF89/00CC) eşleşir. Nefes hız 2 (15 s sayım: ≈ 2–2,5 s); G213 2000 ms kaldı. Mevcut renk okunamaz (GetFeature cihaz bilgisi döndürür). Kullanıcı doğruladı. 0 uyarı, 97/97. Açık: G213–Lenovo uzun süreli kayma ölçülmedi; gerekirse hız 2 süresi 60 s sayımla kesinleştirilir.
-- **Adım 12 — fare:** logo + DPI şeridi; açılışta `normal_color`.- Farklı DPI testi kullanıcı kararıyla kapsam dışı.
+- **Adım 12 — fare:** logo + DPI şeridi; açılışta `normal_color`.
+- Farklı DPI testi kullanıcı kararıyla kapsam dışı.
 ## Açık sorular
 
 - Güncel AHK (`E:\Downloads\LED_SDK_9.00\kedi-kilit.ahk`, rakam kodlu) ile `legacy/kedi-kilit.ahk` (eski, harf parolalı) farklı. CLAUDE.md'nin "çalışan davranış örneği" bu klasördeki eski sürüm değil; referans CPP-PLAN.md.

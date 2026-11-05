@@ -3,6 +3,7 @@
 #include <shellapi.h>
 
 #include <cstdint>
+#include <cstdio>
 #include <initializer_list>
 #include <string>
 #include <utility>
@@ -314,6 +315,17 @@ void set_idle_minutes(int minutes) {
     }
 }
 
+void set_led_color(Rgb color) {
+    char hex[7];
+    std::snprintf(hex, sizeof(hex), "%02X%02X%02X", color.r, color.g, color.b);
+    if (apply_settings({{"led", "normal_color", hex}})) {
+        log_line(std::string("led normal color ") + hex);
+        if (g_app.config.led_enabled) {
+            led_set_normal(g_app.config.led_normal_color);
+        }
+    }
+}
+
 void open_log_folder() {
     ShellExecuteW(g_app.window, L"open", g_app.paths.dir.c_str(), nullptr, nullptr, SW_SHOWNORMAL);
 }
@@ -339,10 +351,15 @@ void on_tray_event(LPARAM event) {
     reload_config();
     const Config& config = g_app.config;
     const TrayMenuState state{config.cat_detect, config.pause_in_fullscreen, config.overlay_enabled,
-                              config.overlay_alpha, config.idle_lock_min};
+                              config.overlay_alpha, config.idle_lock_min,
+                              config.led_normal_color};
     const int command = tray_show_menu(g_app.window, state);
     if (command >= kTrayIdleFirst && command <= kTrayIdleLast) {
         set_idle_minutes(kIdleChoices[command - kTrayIdleFirst]);
+        return;
+    }
+    if (command >= kTrayColorFirst && command <= kTrayColorLast) {
+        set_led_color(kLedColors[command - kTrayColorFirst].color);
         return;
     }
     switch (command) {

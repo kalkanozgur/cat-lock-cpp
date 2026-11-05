@@ -1,7 +1,23 @@
 #pragma once
 #include <windows.h>
 
+#include "core/g213.h"
+
 namespace kk::win {
+
+struct LedColorChoice {
+    const wchar_t* label;
+    Rgb color;
+};
+
+// Klavye ışığı alt menüsü: kilit açıldıktan sonraki sabit renk.
+inline constexpr LedColorChoice kLedColors[] = {
+    {L"Mor", {0x80, 0x00, 0xFF}},       {L"Beyaz", {0xFF, 0xFF, 0xFF}},
+    {L"Kırmızı", {0xFF, 0x00, 0x00}},   {L"Turuncu", {0xFF, 0x80, 0x00}},
+    {L"Sarı", {0xFF, 0xFF, 0x00}},      {L"Yeşil", {0x00, 0xFF, 0x00}},
+    {L"Camgöbeği", {0x00, 0xFF, 0xFF}}, {L"Mavi", {0x00, 0x00, 0xFF}},
+    {L"Pembe", {0xFF, 0x00, 0x80}},
+};
 
 enum TrayCommand : int {
     kTrayNone = 0,
@@ -14,6 +30,8 @@ enum TrayCommand : int {
     kTrayDim50,
     kTrayIdleFirst,
     kTrayIdleLast = kTrayIdleFirst + 4,  // kIdleChoices ile aynı uzunluk
+    kTrayColorFirst,
+    kTrayColorLast = kTrayColorFirst + 8,  // kLedColors ile aynı uzunluk
     kTrayOpenConfig,
     kTrayOpenLogFolder,
     kTrayExit,
@@ -25,6 +43,7 @@ struct TrayMenuState {
     bool overlay_enabled;
     int overlay_alpha;
     int idle_lock_min;
+    Rgb led_normal_color;
 };
 
 // Boşta kilit alt menüsü, dakika. 0 = kapalı.

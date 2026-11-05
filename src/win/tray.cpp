@@ -64,8 +64,9 @@ int tray_show_menu(HWND window, const TrayMenuState& state) {
     const HMENU menu = CreatePopupMenu();
     const HMENU dim_menu = CreatePopupMenu();
     const HMENU idle_menu = CreatePopupMenu();
-    if (menu == nullptr || dim_menu == nullptr || idle_menu == nullptr) {
-        for (const HMENU created : {menu, dim_menu, idle_menu}) {
+    const HMENU color_menu = CreatePopupMenu();
+    if (menu == nullptr || dim_menu == nullptr || idle_menu == nullptr || color_menu == nullptr) {
+        for (const HMENU created : {menu, dim_menu, idle_menu, color_menu}) {
             if (created != nullptr) {
                 DestroyMenu(created);
             }
@@ -79,6 +80,16 @@ int tray_show_menu(HWND window, const TrayMenuState& state) {
         AppendMenuW(idle_menu, MF_STRING, static_cast<UINT_PTR>(kTrayIdleFirst + i), kIdleLabels[i]);
         if (kIdleChoices[i] == state.idle_lock_min) {
             CheckMenuRadioItem(idle_menu, kTrayIdleFirst, kTrayIdleLast, kTrayIdleFirst + i,
+                               MF_BYCOMMAND);
+        }
+    }
+    static_assert(kTrayColorLast - kTrayColorFirst + 1 == ARRAYSIZE(kLedColors));
+    // ini'de elle verilmiş başka bir renk varsa hiçbiri işaretlenmez.
+    for (int i = 0; i < static_cast<int>(ARRAYSIZE(kLedColors)); ++i) {
+        AppendMenuW(color_menu, MF_STRING, static_cast<UINT_PTR>(kTrayColorFirst + i),
+                    kLedColors[i].label);
+        if (kLedColors[i].color == state.led_normal_color) {
+            CheckMenuRadioItem(color_menu, kTrayColorFirst, kTrayColorLast, kTrayColorFirst + i,
                                MF_BYCOMMAND);
         }
     }
@@ -108,6 +119,7 @@ int tray_show_menu(HWND window, const TrayMenuState& state) {
                 kTrayToggleFullscreen, L"Tam ekranda otomatik kilit yok");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(idle_menu), L"Boşta kilit");
     AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(dim_menu), L"Karartma");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(color_menu), L"Klavye ışığı");
     AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
     AppendMenuW(menu, MF_STRING, kTrayOpenConfig, L"Ayar dosyasını aç");
     AppendMenuW(menu, MF_STRING, kTrayOpenLogFolder, L"Log klasörü");
