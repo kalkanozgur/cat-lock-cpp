@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.21)
 # Statik CRT: exe yalnız Windows DLL'lerine bağlıdır (CLAUDE.md §2). project()'ten önce olmalı.
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-project(cat-lock-cpp VERSION 1.0.0 LANGUAGES CXX RC)
+project(cat-lock-cpp VERSION 1.1.0 LANGUAGES CXX RC)
 
 if(NOT MSVC)
   message(FATAL_ERROR "Yalnız MSVC desteklenir.")

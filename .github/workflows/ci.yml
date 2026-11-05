@@ -1,0 +1,67 @@
+# Her push/PR: Debug + Release derleme (/W4 /WX → uyarı = hata) ve kk_core_tests.
+# v* tag'i: aynı denetimler geçerse Release zip'i GitHub Release'e yüklenir.
+# Uygulama exe'si hiçbir adımda çalıştırılmaz (klavye + fareyi yutar).
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tag sürümü CMake sürümüyle aynı mı
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        run: |
+          $line = Select-String CMakeLists.txt -Pattern 'project\(cat-lock-cpp VERSION ([0-9.]+)'
+          $version = $line.Matches[0].Groups[1].Value
+          if ("v$version" -ne '${{ github.ref_name }}') { throw "Tag ${{ github.ref_name }}, CMake v$version" }
+
+      # Preset yerelde VS 2026 generator'ını ister; runner'daki varsayılan VS generator'ı kullanılır.
+      - name: Configure
+        run: cmake -S . -B build -A x64
+
+      - name: Build Debug
+        run: cmake --build build --config Debug
+
+      - name: Build Release
+        run: cmake --build build --config Release
+
+      - name: Test (yalnız kk_core_tests)
+        run: ctest --test-dir build -C Debug --output-on-failure
+
+      - name: Release zip
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: cmake --build build --config Release --target dist
+
+      - uses: actions/upload-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          name: dist
+          path: build/dist/*.zip
+          if-no-files-found: error
+
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" *.zip --repo "${{ github.repository }}" --title "cat-lock-cpp ${{ github.ref_name }}" --generate-notes
