@@ -21,11 +21,12 @@
 
 - **Adım 14 — Logitech mor + senkron (05.11.2026, tamam):** `logitech_tone` (kırmızı ×1,75; 8000FF → E000FF), Logitech 3150 ms, kilitliyken her 3 nefeste (9450 ms) yeniden başlatma. Release 0 uyarı, 102/102. Kullanıcı "test ettim" dedi; ancak commit anında Debug exe açıktı ve yeniden derlenemedi (LNK1168) → test eski Debug ile yapılmış olabilir, sonraki oturumda Debug derlenip doğrulanmalı.
 - **İnceleme düzeltmeleri (05.11.2026, tamam):** Logitech 3175 ms, 2 nefeste yenileme (Lenovo en çok 20, Logitech sınırsız; G213 ayarı kalıcı yazmıyor, takınca efekt gelmedi); takılan LED cihazı `WM_DEVICECHANGE` ile hemen desene katılır. 0 uyarı, 100/100. Kullanıcı onayladı.
-- Sıradaki: **Adım 15 — kedi tuşları sarı** (aşağıdaki not).
+- Sıradaki: yeni adım kullanıcıdan gelir. Kedi tuşları sarı özelliği **ertelendi** (kullanıcı vazgeçebilir).
 - **Gelecek özellik (kullanıcı isteği, 05.11.2026):** kedi algılamayla kilitlenince kilide sebep olan tuşlar sarı yansın.
   - Kısıt: G213 5 bölge, Lenovo 4 bölge, tuş başına LED yok → tuşların düştüğü **bölgeler** sarı olur. Bölge haritası (vk/scan → bölge) cihaz başına çıkarılmalı.
   - Hook'ta yalnız tuş kimliği kaydedilir (alloc/IO yok); LED ana döngüde. Tuşlar loga yazılmaz.
-  - Açık sorular: sarı yalnız kilit süresince mi (diğer bölgeler kırmızı nefes)? Fare ne yapar? Elle/boşta kilitte davranış aynı kalır.
+  - Kararlar (05.11.2026): sarılar da nefes efektine uymalı (G213 nefesi yalnız tüm klavyede — çözüm aranmalı); fare kırmızı nefes kalır.
+  - Açık: bölge haritası nasıl çıkarılacak (kullanıcı ertelendi); elle/boşta kilitte davranış aynı kalır.
 - **Adım 9 — keşif (05.11.2026, tamam, salt okuma):**
   - Lenovo: ITE 8295 `048D:C963`, sayfa `FF89` usage `00CC`, 33 baytlık feature raporu → 4 bölge RGB. Vantage çalışmıyor.
   - Fare: G502 HERO `046D:C08B`, HID++ 2.0 uzun rapor (sayfa `FF00`, 20 bayt), 2 bölge. G HUB ajanı çalışmıyor.
