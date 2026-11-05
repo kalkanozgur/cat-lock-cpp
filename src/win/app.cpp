@@ -1,5 +1,6 @@
 #include "win/app.h"
 
+#include <dbt.h>
 #include <shellapi.h>
 
 #include <cstdint>
@@ -444,6 +445,12 @@ LRESULT CALLBACK window_proc(HWND window, UINT message, WPARAM wparam, LPARAM lp
                 show_overlay();  // monitör eklendi, çıkarıldı veya çözünürlük değişti
             }
             return DefWindowProcW(window, message, wparam, lparam);
+        case WM_DEVICECHANGE:
+            // Üst düzey pencereye kayıt olmadan gelir; tak/çıkar ayrımı tarama sırasında yapılır.
+            if (wparam == DBT_DEVNODES_CHANGED && g_app.config.led_enabled) {
+                led_on_device_change(window, g_app.config.led_normal_color);
+            }
+            return TRUE;
         case WM_ENDSESSION:
             if (wparam != 0) {
                 shut_down("session end");

@@ -79,9 +79,9 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 |---|---|
 | Kilitle | `Pause` ve/veya `Ctrl+Alt+L` (`[lock] hotkey`) |
 | Aç | Kod: üst sıra veya numpad rakamları |
-| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes; Lenovo kademe 1, Logitech 3150 ms, her 3 nefeste tüm cihazlara yeniden gönderilir (senkron). Logitech'te kırmızı ×1,75 (`logitech_tone`) |
+| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes; Lenovo kademe 1, Logitech 3175 ms, her 2 nefeste yeniden gönderilir (Lenovo kilit başına en çok 20 kez, Logitech sınırsız). Logitech'te kırmızı ×1,75 (`logitech_tone`) |
 | LED açılış | 3× yeşil yanıp sönme (150 ms adım) → `[led] normal_color` (varsayılan `8000FF` mor; tepsiden seçilir). Mevcut renk okunamaz, profile dönüş yok |
-| LED cihaz yok / yazma hatası | LED'siz devam, bir kez logla; her kilitte yeniden denenir |
+| LED cihaz yok / yazma hatası | LED'siz devam, bir kez logla; her kilitte ve cihaz takılınca (`WM_DEVICECHANGE`) yeniden denenir |
 | Kedi algılama | Modifier, Space ve WASD hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş. 3 s'den uzun basılı tuş eşzamanlı sayılmaz (`kCatHeldMaxAgeMs`); yazılımla gönderilen tuşlar sayılmaz; tuş tekrarı sayılmaz |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |
 | Boşta | `GetLastInputInfo`, 1 s timer (yalnız `idle_lock_min > 0` ise), varsayılan 3 dk; boşta kalma başına bir kilit (`IdlePolicy`) |

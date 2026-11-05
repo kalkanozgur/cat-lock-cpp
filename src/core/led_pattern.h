@@ -12,13 +12,16 @@ inline constexpr Rgb kLedOff{0, 0, 0};
 
 // Lenovo nefes süresi ayarlanamaz, yalnız kademe seçilir. Senkron için G213 ve farenin
 // süresi bu kademenin ölçülen süresine eşitlenir.
-// Kullanıcı kararı: laptop yavaş kademe. Kıyas (05.11.2026): 3200 ms'de laptop, 3100 ms'de
-// G213 öne geçiyor → 3150. Donanım nefesleri yine kayar: her kLockResyncBreaths nefeste
-// tüm cihazlara nefes komutu yeniden gönderilir, kayma birikmez.
+// Kullanıcı kararı: laptop yavaş kademe. Kıyas (05.11.2026): 3200 ms'de laptop, 3150 ms'de
+// Logitech 3. nefeste öne geçiyor → 3175. Donanım nefesleri yine kayar: her kLockResyncBreaths
+// nefeste nefes komutu yeniden gönderilir, kayma birikmez.
 inline constexpr std::uint8_t kLenovoLockSpeed = 1;
-inline constexpr std::uint16_t kLockBreathePeriodMs = 3150;
-inline constexpr unsigned kLockResyncBreaths = 3;
+inline constexpr std::uint16_t kLockBreathePeriodMs = 3175;
+inline constexpr unsigned kLockResyncBreaths = 2;
 inline constexpr unsigned kLockResyncMs = kLockBreathePeriodMs * kLockResyncBreaths;
+// Lenovo ayarı kalıcı hafızaya yazıyor olabilir (bilinmiyor): kilit başına en çok bu kadar
+// yenilenir (~2 dk), sonra serbest kalır. G213 yazmıyor (takıp çıkarınca efekt gelmedi): sınırsız.
+inline constexpr unsigned kLockResyncMax = 20;
 
 // Açılış: yeşil / kapalı / yeşil / kapalı / yeşil, her adım 150 ms, sonra normal renk.
 inline constexpr unsigned kUnlockBlinkCount = 3;

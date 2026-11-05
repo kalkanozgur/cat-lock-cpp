@@ -21,7 +21,7 @@ Mevcut çalışan sürüm: `kedi-kilit.ahk` (AutoHotkey v2) — referans davran�
 | Kilitle | `Pause` veya `Ctrl+Alt+L` |
 | Aç | Kod (üst sıra veya numpad rakamları), araya giren rakam dışı tuş tamponu sıfırlar |
 | Kilitliyken | Tüm tuşlar + fare tuşları/tekerlek/hareket yutulur |
-| LED kilitli | Klavyenin kırmızı nefes efekti; G213 + G502 3150 ms, Lenovo kademe 1, her 3 nefeste yeniden başlatılır (senkron) (kullanıcı kararı, 05.11.2026) |
+| LED kilitli | Klavyenin kırmızı nefes efekti; G213 + G502 3175 ms, Lenovo kademe 1, her 2 nefeste yeniden başlatılır (Lenovo en çok 20 kez) (kullanıcı kararı, 05.11.2026) |
 | LED açılış | 3× yeşil yanıp sönme, 150 ms adım (05.11.2026) → `[led] normal_color` sabit rengi (varsayılan mor `8000FF`, tepsiden seçilir) |
 | Hedef cihaz | Yalnız G213 |
 
