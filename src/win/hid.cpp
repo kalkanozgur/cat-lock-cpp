@@ -105,6 +105,17 @@ bool write_output(HANDLE device, const std::uint8_t* data, std::size_t size) {
     return ok && written == size;
 }
 
+bool read_input(HANDLE device, std::uint8_t* data, std::size_t size) {
+    DWORD read = 0;
+    const bool ok = timed_io(
+        device,
+        [&](OVERLAPPED* overlapped) {
+            return ReadFile(device, data, static_cast<DWORD>(size), nullptr, overlapped) != FALSE;
+        },
+        &read);
+    return ok && read == size;
+}
+
 bool set_feature(HANDLE device, const std::uint8_t* data, std::size_t size) {
     DWORD returned = 0;
     return timed_io(

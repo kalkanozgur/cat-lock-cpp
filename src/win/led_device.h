@@ -18,5 +18,6 @@ public:
 // Cihaz yoksa nullptr.
 std::unique_ptr<LedDevice> open_g213();
 std::unique_ptr<LedDevice> open_lenovo_4zone();
+std::unique_ptr<LedDevice> open_g502();
 
 }  // namespace kk::win

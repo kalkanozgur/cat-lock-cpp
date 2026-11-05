@@ -36,6 +36,7 @@ add_executable(cat-lock-cpp WIN32
   src/win/hooks.cpp
   src/win/led.cpp
   src/win/led_g213.cpp
+  src/win/led_g502.cpp
   src/win/led_lenovo.cpp
   src/win/log.cpp
   src/win/main.cpp
@@ -92,6 +93,7 @@ add_executable(kk_core_tests
   tests/test_code_matcher.cpp
   tests/test_config.cpp
   tests/test_g213.cpp
+  tests/test_g502.cpp
   tests/test_hook_health.cpp
   tests/test_idle_policy.cpp
   tests/test_key_map.cpp
