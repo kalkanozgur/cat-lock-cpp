@@ -36,6 +36,7 @@ add_executable(cat-lock-cpp WIN32
   src/win/hooks.cpp
   src/win/led.cpp
   src/win/led_g213.cpp
+  src/win/led_lenovo.cpp
   src/win/log.cpp
   src/win/main.cpp
   src/win/overlay.cpp
@@ -95,6 +96,7 @@ add_executable(kk_core_tests
   tests/test_idle_policy.cpp
   tests/test_key_map.cpp
   tests/test_led_pattern.cpp
+  tests/test_lenovo_4zone.cpp
 )
 target_include_directories(kk_core_tests PRIVATE tests)
 target_compile_definitions(kk_core_tests PRIVATE

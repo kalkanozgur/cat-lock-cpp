@@ -25,4 +25,7 @@ HANDLE open_first(Match match, DWORD access, bool overlapped);
 // Çıkış raporu; cihaz yanıt vermezse kWriteTimeoutMs sonra iptal edilir.
 bool write_output(HANDLE device, const std::uint8_t* data, std::size_t size);
 
+// Feature raporu (ilk bayt rapor ID'si), aynı zaman aşımıyla. Cihaz overlapped açılmalı.
+bool set_feature(HANDLE device, const std::uint8_t* data, std::size_t size);
+
 }  // namespace kk::win::hid

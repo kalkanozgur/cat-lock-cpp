@@ -24,6 +24,7 @@ struct Backend {
 
 Backend g_backends[] = {
     {"G213", open_g213, false},
+    {"Lenovo4Zone", open_lenovo_4zone, false},
 };
 
 struct Active {
