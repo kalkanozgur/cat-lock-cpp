@@ -7,8 +7,8 @@
 
 namespace kk::win {
 
-void led_lock(HWND window, Rgb normal_color);  // kırmızı nefes
-void led_unlock(HWND window);                  // 500 ms yeşil, sonra normal renk
+void led_lock(HWND window, Rgb normal_color);  // kırmızı nefes, 2 s
+void led_unlock(HWND window);                  // 3× yeşil yanıp sönme, sonra normal renk
 bool led_on_timer(HWND window, WPARAM id);     // LED timer'ıysa true
 void led_shutdown(HWND window);                // kilitliyken çıkışta normal renge döner
 

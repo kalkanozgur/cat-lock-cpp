@@ -92,6 +92,7 @@ add_executable(kk_core_tests
   tests/test_hook_health.cpp
   tests/test_idle_policy.cpp
   tests/test_key_map.cpp
+  tests/test_led_pattern.cpp
 )
 target_include_directories(kk_core_tests PRIVATE tests)
 target_compile_definitions(kk_core_tests PRIVATE

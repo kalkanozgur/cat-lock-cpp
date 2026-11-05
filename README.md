@@ -13,7 +13,7 @@ Kediler klavyeye bastığında klavye ve fareyi kilitleyen Windows tepsi uygulam
 | Kedi algılama | Çok tuşa aynı anda ya da insanüstü hızda basılınca otomatik kilit |
 | Boşta kilit | 3 dakika girdi yoksa (tepsiden değiştirilir veya kapatılır) |
 | Overlay | Kilitliyken tüm monitörler yaklaşık %30 kararır |
-| LED | G HUB gerekmez. Kilitli: kırmızı nefes · Açılış: 0,5 s yeşil → `normal_color` |
+| LED | G HUB gerekmez. Kilitli: kırmızı nefes (2 s) · Açılış: 3× yeşil yanıp sönme → `normal_color` |
 | Tepsi | Kilitle · Kedi algılama aç/kapa · Tam ekranda otomatik kilit yok · Boşta kilit (Kapalı/1/3/5/10 dk) · Karartma (Kapalı/%20/%30/%50) · Ayar dosyası · Log klasörü · Çıkış |
 
 ## Gereksinimler
@@ -112,14 +112,14 @@ Kod `.ini`'de düz metin: tehdit modeli kediler; kişilere karşı bir güvenlik
 
 ```
 cat-lock-cpp/
-  CMakeLists.txt  CMakePresets.json  README.md  CLAUDE.md  CPP-PLAN.md
+  CMakeLists.txt  CMakePresets.json  README.md  CLAUDE.md
   src/core/      platformdan bağımsız mantık (testli)
   src/win/       Win32: hook, LED, overlay, tepsi
   tests/         kk_core_tests
   config/        cat-lock-cpp.example.ini
   scripts/       register-task.ps1, uninstall.cmd, uninstall.ps1
   legacy/        kedi-kilit.ahk, LogitechLedEnginesWrapper.dll
-  docs/          DURUM.md, kurulum.md, claude-kurallar.md
+  docs/          CPP-PLAN.md, DURUM.md, kurulum.md, claude-kurallar.md
   .claude/       settings.json, skills/oturum-logu
   .vscode/       settings.json, extensions.json
 ```

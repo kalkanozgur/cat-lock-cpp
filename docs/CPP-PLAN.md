@@ -21,8 +21,8 @@ Mevcut çalışan sürüm: `kedi-kilit.ahk` (AutoHotkey v2) — referans davran�
 | Kilitle | `Pause` veya `Ctrl+Alt+L` |
 | Aç | Kod (üst sıra veya numpad rakamları), araya giren rakam dışı tuş tamponu sıfırlar |
 | Kilitliyken | Tüm tuşlar + fare tuşları/tekerlek/hareket yutulur |
-| LED kilitli | Klavyenin kırmızı nefes efekti, 1 s (AHK'den farklı, kullanıcı kararı) |
-| LED açılış | Yeşil 500 ms → `[led] normal_color` sabit rengi (varsayılan beyaz) |
+| LED kilitli | Klavyenin kırmızı nefes efekti, 2 s (kullanıcı kararı, 05.11.2026) |
+| LED açılış | 3× yeşil yanıp sönme, 150 ms adım (05.11.2026) → `[led] normal_color` sabit rengi (varsayılan beyaz) |
 | Hedef cihaz | Yalnız G213 |
 
 ## Mimari

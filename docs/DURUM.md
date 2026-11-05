@@ -15,11 +15,14 @@
 
 - **Yeniden adlandırma ve kaldırıcı (31.10.2026):** uygulama `cat-lock-cpp` oldu; ayar eski `KediKilit` klasöründen ilk açılışta taşınır. `scripts/uninstall.cmd` + `uninstall.ps1`, `dist` hedefi, Release boyut bayrakları eklendi. Kullanıcı testleri onayladı. 0 uyarı, `kk_core_tests` 89/89, Release exe 233 984 bayt.
 
+- **Adım 8 — LED desenleri (05.11.2026):** kilit nefesi 2 s, açılışta 3× yeşil yanıp sönme (150 ms adım) → `normal_color`. Desenler `core/led_pattern.h`'de, cihazdan bağımsız. `CPP-PLAN.md` `docs/` altına taşındı. Kullanıcı Debug'da doğruladı. 0 uyarı, `kk_core_tests` 93/93.
+
 ## Sıradaki
 
-- Plan adımları tamamlandı. Yeni adım kullanıcıdan gelir.
+- **Adım 9 — keşif (salt okuma):** Lenovo IdeaPad Gaming 3 15ACH6 (82K2) klavye aydınlatması (ITE `048D:C963`) ve fare (Logitech `046D:C08B`; `25A7:FA67` alıcısı da var). Cihaza yazılmaz.
+- **Adım 10 — LED arka uç arayüzü:** G213 ilk arka uç; bulunan tüm cihazlar aynı deseni alır.
+- **Adım 11 — Lenovo klavye**, **Adım 12 — fare** (keşif sonucuna göre).
 - Farklı DPI testi kullanıcı kararıyla kapsam dışı.
-
 ## Açık sorular
 
 - Güncel AHK (`E:\Downloads\LED_SDK_9.00\kedi-kilit.ahk`, rakam kodlu) ile `legacy/kedi-kilit.ahk` (eski, harf parolalı) farklı. CLAUDE.md'nin "çalışan davranış örneği" bu klasördeki eski sürüm değil; referans CPP-PLAN.md.

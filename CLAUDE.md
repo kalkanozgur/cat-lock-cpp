@@ -12,7 +12,7 @@ Kediler klavyeye basınca klavye + fareyi kilitleyen Windows tepsi uygulaması. 
 
 | Dosya | Rol |
 |---|---|
-| `CPP-PLAN.md` | Kararlar, mimari, kapsam — **tek doğru kaynak** |
+| `docs/CPP-PLAN.md` | Kararlar, mimari, kapsam — **tek doğru kaynak** |
 | `legacy/kedi-kilit.ahk` | Yalnız yerelde, repoda yok. Eski davranış örneği; CPP-PLAN ile çelişirse CPP-PLAN geçerli |
 | `docs/claude-kurallar.md` | Genel çalışma kuralları kaynağı (`~/.claude/CLAUDE.md`'ye aktarıldı) |
 | `docs/kurulum.md` | İlk kurulumun kaydı |
@@ -79,8 +79,8 @@ scripts/           register-task.ps1 (kullanıcı, yönetici olarak çalıştır
 |---|---|
 | Kilitle | `Pause` ve/veya `Ctrl+Alt+L` (`[lock] hotkey`) |
 | Aç | Kod: üst sıra veya numpad rakamları |
-| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes, 1 s |
-| LED açılış | Yeşil → 500 ms → `[led] normal_color` (varsayılan `FFFFFF`). Mevcut renk okunamaz, profile dönüş yok |
+| LED kilit | G213'e doğrudan HID (VID `046D`, PID `C336`, sayfa `0xFF43`, 20 bayt): kırmızı nefes, 2 s |
+| LED açılış | 3× yeşil yanıp sönme (150 ms adım) → `[led] normal_color` (varsayılan `FFFFFF`). Mevcut renk okunamaz, profile dönüş yok |
 | LED cihaz yok / yazma hatası | LED'siz devam, bir kez logla; her kilitte yeniden denenir |
 | Kedi algılama | Modifier, Space ve WASD hariç eşzamanlı basılı ≥ `cat_min_simultaneous` **veya** `cat_window_ms` içinde ≥ `cat_min_distinct` farklı tuş. 3 s'den uzun basılı tuş eşzamanlı sayılmaz (`kCatHeldMaxAgeMs`); yazılımla gönderilen tuşlar sayılmaz; tuş tekrarı sayılmaz |
 | Tam ekran | `pause_in_fullscreen=1` → otomatik kilitler askıda (`SHQueryUserNotificationState`: D3D tam ekran / sunum / meşgul) |

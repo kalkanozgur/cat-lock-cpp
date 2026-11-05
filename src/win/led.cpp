@@ -5,6 +5,7 @@
 
 #include <string>
 
+#include "core/led_pattern.h"
 #include "win/log.h"
 
 namespace kk::win {
@@ -12,15 +13,12 @@ namespace kk::win {
 namespace {
 
 constexpr UINT_PTR kTimerRelease = 11;
-constexpr UINT kReleaseDelayMs = 500;
-constexpr std::uint16_t kBreathePeriodMs = 1000;
 constexpr DWORD kWriteTimeoutMs = 100;  // ana iş parçacığı hook'ları da çalıştırıyor
-constexpr Rgb kRed{255, 0, 0};
-constexpr Rgb kGreen{0, 255, 0};
 
 enum class State { Off, Locked, Releasing };
 
 State g_state = State::Off;
+unsigned g_blink_step = 0;
 HANDLE g_device = INVALID_HANDLE_VALUE;
 Rgb g_normal_color;
 bool g_failure_logged = false;
@@ -130,7 +128,7 @@ bool send(const G213Packet& packet) {
 void led_lock(HWND window, Rgb normal_color) {
     g_normal_color = normal_color;
     if (g_state == State::Releasing) {
-        // Yeşil sürerken yeniden kilit: cihaz zaten açık.
+        // Yanıp sönme sürerken yeniden kilit: cihaz zaten açık.
         KillTimer(window, kTimerRelease);
     } else if (g_state == State::Off) {
         const DWORD started = GetTickCount();
@@ -145,7 +143,7 @@ void led_lock(HWND window, Rgb normal_color) {
         return;
     }
     g_state = State::Locked;
-    if (send(g213_breathe(kRed, kBreathePeriodMs))) {
+    if (send(g213_breathe(kLockColor, kLockBreathePeriodMs))) {
         g_failure_logged = false;
     }
 }
@@ -154,8 +152,9 @@ void led_unlock(HWND window) {
     if (g_state != State::Locked) {
         return;
     }
-    if (send(g213_static(kGreen))) {
-        SetTimer(window, kTimerRelease, kReleaseDelayMs, nullptr);
+    g_blink_step = 0;
+    if (send(g213_static(unlock_blink_color(g_blink_step)))) {
+        SetTimer(window, kTimerRelease, kUnlockBlinkStepMs, nullptr);
         g_state = State::Releasing;
     }
 }
@@ -164,8 +163,19 @@ bool led_on_timer(HWND window, WPARAM id) {
     if (id != kTimerRelease) {
         return false;
     }
+    if (g_state != State::Releasing) {
+        KillTimer(window, kTimerRelease);
+        return true;
+    }
+    ++g_blink_step;
+    if (g_blink_step < kUnlockBlinkSteps) {
+        if (!send(g213_static(unlock_blink_color(g_blink_step)))) {
+            KillTimer(window, kTimerRelease);  // send durumu Off yaptı
+        }
+        return true;
+    }
     KillTimer(window, kTimerRelease);
-    if (g_state == State::Releasing && send(g213_static(g_normal_color))) {
+    if (send(g213_static(g_normal_color))) {
         close_device();
         g_state = State::Off;
     }
