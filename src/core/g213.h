@@ -54,6 +54,15 @@ constexpr G213Packet g213_breathe(Rgb color, std::uint16_t period_ms) noexcept {
     return packet;
 }
 
+// Logitech LED'lerinde orta kırmızı sönük kalır: 8000FF açık mavi görünür, E000FF mor (kullanıcı
+// gözlemi, 05.11.2026). Kırmızıya ×1,75 kazanç, 255'te kırpılır. Laptop'a uygulanmaz.
+// shortcut: tek nokta (mor) ölçümü; başka ara tonlarda sapma görülürse kanal eğrisini ölç.
+constexpr Rgb logitech_tone(Rgb color) noexcept {
+    const unsigned red = color.r * 7u / 4u;
+    color.r = static_cast<std::uint8_t>(red > 255u ? 255u : red);
+    return color;
+}
+
 // Tam olarak RRGGBB; önek yok.
 constexpr std::optional<Rgb> parse_rgb(std::string_view text) noexcept {
     if (text.size() != 6) {

@@ -19,7 +19,7 @@ public:
 
     bool breathe(Rgb color, std::uint16_t period_ms) override {
         for (std::uint8_t zone = 0; zone < kG502ZoneCount; ++zone) {
-            if (!send(g502_breathe(feature_index_, zone, color, period_ms))) {
+            if (!send(g502_breathe(feature_index_, zone, logitech_tone(color), period_ms))) {
                 return false;
             }
         }
@@ -27,7 +27,7 @@ public:
     }
     bool solid(Rgb color) override {
         for (std::uint8_t zone = 0; zone < kG502ZoneCount; ++zone) {
-            if (!send(g502_static(feature_index_, zone, color))) {
+            if (!send(g502_static(feature_index_, zone, logitech_tone(color)))) {
                 return false;
             }
         }

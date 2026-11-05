@@ -14,9 +14,9 @@ public:
     G213& operator=(const G213&) = delete;
 
     bool breathe(Rgb color, std::uint16_t period_ms) override {
-        return send(g213_breathe(color, period_ms));
+        return send(g213_breathe(logitech_tone(color), period_ms));
     }
-    bool solid(Rgb color) override { return send(g213_static(color)); }
+    bool solid(Rgb color) override { return send(g213_static(logitech_tone(color))); }
 
 private:
     bool send(const G213Packet& packet) {

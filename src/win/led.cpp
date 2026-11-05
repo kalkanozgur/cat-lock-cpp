@@ -14,6 +14,7 @@ namespace kk::win {
 namespace {
 
 constexpr UINT_PTR kTimerRelease = 11;
+constexpr UINT_PTR kTimerResync = 12;  // yalnız kilitliyken
 
 // Desteklenen cihazlar. Hepsi aynı anda aynı deseni alır.
 struct Backend {
@@ -77,8 +78,15 @@ void broadcast(Fn fn) {
     }
 }
 
+void start_breathe() {
+    broadcast([](LedDevice& device) {
+        return device.breathe(kLockColor, kLockBreathePeriodMs);
+    });
+}
+
 void finish(HWND window) {
     KillTimer(window, kTimerRelease);
+    KillTimer(window, kTimerResync);
     broadcast([](LedDevice& device) { return device.solid(g_normal_color); });
     g_active.clear();
     g_state = State::Off;
@@ -100,15 +108,17 @@ void led_lock(HWND window, Rgb normal_color) {
         return;
     }
     g_state = State::Locked;
-    broadcast([](LedDevice& device) {
-        return device.breathe(kLockColor, kLockBreathePeriodMs);
-    });
+    start_breathe();
     for (const Active& active : g_active) {
         active.backend->failure_logged = false;
+    }
+    if (g_state == State::Locked) {
+        SetTimer(window, kTimerResync, kLockResyncMs, nullptr);
     }
 }
 
 void led_unlock(HWND window) {
+    KillTimer(window, kTimerResync);
     if (g_state != State::Locked) {
         return;
     }
@@ -132,6 +142,15 @@ void led_set_normal(Rgb color) {
 }
 
 bool led_on_timer(HWND window, WPARAM id) {
+    if (id == kTimerResync) {
+        if (g_state == State::Locked) {
+            start_breathe();  // donanım nefesleri kayar; hepsi aynı anda yeniden başlar
+        }
+        if (g_state != State::Locked) {
+            KillTimer(window, kTimerResync);
+        }
+        return true;
+    }
     if (id != kTimerRelease) {
         return false;
     }
@@ -157,6 +176,7 @@ void led_shutdown(HWND window) {
         finish(window);
     } else {
         KillTimer(window, kTimerRelease);
+        KillTimer(window, kTimerResync);
     }
 }
 

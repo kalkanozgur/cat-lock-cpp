@@ -46,3 +46,10 @@ TEST(config_normal_color_invalid_keeps_default) {
     CHECK_EQ(result.issues.size(), std::size_t{1});
     CHECK(result.config.led_normal_color == Rgb(0x80, 0x00, 0xFF));
 }
+
+TEST(logitech_tone_boosts_mid_red_only) {
+    CHECK(kk::logitech_tone(Rgb{0x80, 0x00, 0xFF}) == Rgb(0xE0, 0x00, 0xFF));
+    CHECK(kk::logitech_tone(Rgb{0xFF, 0x80, 0x00}) == Rgb(0xFF, 0x80, 0x00));
+    CHECK(kk::logitech_tone(Rgb{0x00, 0xFF, 0x00}) == Rgb(0x00, 0xFF, 0x00));
+    CHECK(kk::logitech_tone(Rgb{0xC0, 0x10, 0x20}) == Rgb(0xFF, 0x10, 0x20));
+}
