@@ -32,8 +32,10 @@ target_include_directories(kk_core PUBLIC src)
 # Uygulama. Hook'lar klavye ve fareyi yutar: CTest hedefi yapılmaz.
 add_executable(cat-lock-cpp WIN32
   src/win/app.cpp
+  src/win/hid.cpp
   src/win/hooks.cpp
   src/win/led.cpp
+  src/win/led_g213.cpp
   src/win/log.cpp
   src/win/main.cpp
   src/win/overlay.cpp

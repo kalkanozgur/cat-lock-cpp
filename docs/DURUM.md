@@ -19,10 +19,14 @@
 
 ## Sıradaki
 
-- **Adım 9 — keşif (salt okuma):** Lenovo IdeaPad Gaming 3 15ACH6 (82K2) klavye aydınlatması (ITE `048D:C963`) ve fare (Logitech `046D:C08B`; `25A7:FA67` alıcısı da var). Cihaza yazılmaz.
-- **Adım 10 — LED arka uç arayüzü:** G213 ilk arka uç; bulunan tüm cihazlar aynı deseni alır.
-- **Adım 11 — Lenovo klavye**, **Adım 12 — fare** (keşif sonucuna göre).
-- Farklı DPI testi kullanıcı kararıyla kapsam dışı.
+- Sıradaki: **Adım 11 — Lenovo klavye.**
+- **Adım 9 — keşif (05.11.2026, tamam, salt okuma):**
+  - Lenovo: ITE 8295 `048D:C963`, sayfa `FF89` usage `00CC`, 33 baytlık feature raporu → 4 bölge RGB. Vantage çalışmıyor.
+  - Fare: G502 HERO `046D:C08B`, HID++ 2.0 uzun rapor (sayfa `FF00`, 20 bayt), 2 bölge. G HUB ajanı çalışmıyor.
+  - `25A7:FA67` (CX 2.4G alıcı) aydınlatma cihazı değil, kapsam dışı.
+- **Adım 10 — LED arka uç arayüzü (05.11.2026, tamam):** `win/hid.*` ortak HID, `win/led_device.h` arayüz, `win/led_g213.cpp`; `led.cpp` bulunan tüm cihazlara aynı deseni gönderir, hata cihaz başına bir kez loglanır. 0 uyarı, 93/93.
+- **Adım 11 — Lenovo klavye:** donanım nefesi; hız kademesi ölçülür, G213 ve fare nefes süresi ona eşitlenir (senkron, tam 2 s şart değil — kullanıcı kararı).
+- **Adım 12 — fare:** logo + DPI şeridi; açılışta `normal_color`.- Farklı DPI testi kullanıcı kararıyla kapsam dışı.
 ## Açık sorular
 
 - Güncel AHK (`E:\Downloads\LED_SDK_9.00\kedi-kilit.ahk`, rakam kodlu) ile `legacy/kedi-kilit.ahk` (eski, harf parolalı) farklı. CLAUDE.md'nin "çalışan davranış örneği" bu klasördeki eski sürüm değil; referans CPP-PLAN.md.
